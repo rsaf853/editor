@@ -46,9 +46,8 @@ button{cursor:pointer}
 .bar button.pri:hover{background:none;color:var(--fg)}
 
 .pn{padding:30px 22px 60px}
-.hd{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px}
-.hd h1{margin:0;font:900 40px/1 var(--sans);letter-spacing:-.08em}
-.hd p{margin:0;color:var(--mut);font-size:12px;text-align:right;line-height:1.4}
+.hd{margin-bottom:28px}
+.hd h1{margin:0;font:900 22px/1 var(--sans);letter-spacing:-.06em}
 
 .sec{margin-bottom:34px}
 .lab{display:flex;justify-content:space-between;align-items:baseline;font:700 10px var(--sans);letter-spacing:.12em;color:var(--mut);padding-bottom:6px;border-bottom:2px solid var(--fg);margin-bottom:14px}
@@ -73,7 +72,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);border:0;border-radius:0}
 
 .seg{display:flex;border:1px solid var(--fg)}
-.seg button{flex:1;border:0;background:none;padding:6px 0;font:600 11px var(--sans);letter-spacing:0}
+.seg button{flex:1;border:0;background:none;padding:6px 0;display:flex;align-items:center;justify-content:center;min-height:30px;font:600 11px var(--sans);letter-spacing:0}
 .seg button+button{border-left:1px solid var(--fg)}
 .seg button.on{background:var(--fg);color:var(--bg)}
 @media(hover:hover){.seg button:not(.on):hover{background:var(--soft)}}
@@ -129,7 +128,6 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
  #cv{max-height:calc(100vh - 140px);width:auto}
  .bar{padding:12px 40px}
  .pn{height:100vh;overflow:auto;border-left:1px solid var(--line);padding:40px 32px 60px}
- .hd h1{font-size:48px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.a{opacity:1;transform:none}}
 </style></head><body>
@@ -143,7 +141,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
  </section>
 
  <aside class="pn">
-  <header class="hd a" style="--i:0"><h1>r♡sie</h1><p>compact<br>editor</p></header>
+  <header class="hd a" style="--i:0"><h1>compact editor</h1></header>
 
   <!-- 01 TEXT -->
   <div class="sec a" style="--i:1">
@@ -174,7 +172,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    <div class="lab"><b>02</b><span>STYLE</span></div>
    <div class="r2">
     <div class="f"><label>폰트</label><select id="font"></select></div>
-    <div class="f"><label>정렬</label><div class="seg" id="align"><button data-v="left">왼</button><button data-v="center">가운</button><button data-v="justify">양끝</button></div></div>
+    <div class="f"><label>정렬</label><div class="seg" id="align"><button data-v="left" aria-label="왼쪽 정렬"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="0" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="0" y="10.5" width="7" height="1.5"/></svg></button><button data-v="center" aria-label="가운데 정렬"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="2.5" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="3.5" y="10.5" width="7" height="1.5"/></svg></button><button data-v="justify" aria-label="양끝 정렬"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="0" y="3.5" width="14" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="0" y="10.5" width="8" height="1.5"/></svg></button></div></div>
    </div>
    <div class="r2">
     <div class="f"><label>글자 크기 <output id="sizeO"></output></label><input type="range" id="size" min="12" max="40" step="1"></div>
@@ -252,7 +250,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    </div>
    <div class="r2">
     <div class="f"><label>구분 기호</label><div class="seg" id="fSep"><button data-v="•">•</button><button data-v="|">|</button><button data-v="/">/</button></div></div>
-    <div class="f"><label>위치</label><div class="seg" id="fAlign"><button data-v="left">왼</button><button data-v="center">가운</button><button data-v="right">오른</button></div></div>
+    <div class="f"><label>위치</label><div class="seg" id="fAlign"><button data-v="left" aria-label="왼쪽"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="0" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="0" y="10.5" width="7" height="1.5"/></svg></button><button data-v="center" aria-label="가운데"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="2.5" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="3.5" y="10.5" width="7" height="1.5"/></svg></button><button data-v="right" aria-label="오른쪽"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="5" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="7" y="10.5" width="7" height="1.5"/></svg></button></div></div>
    </div>
    <label class="chk"><input type="checkbox" id="fNum">페이지 번호 (2장 이상일 때)</label>
   </div>
