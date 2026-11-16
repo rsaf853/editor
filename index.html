@@ -29,6 +29,8 @@
 html,body{margin:0}
 body{background:var(--bg);color:var(--fg);font:400 14px/1.6 var(--sans);letter-spacing:-.03em;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;letter-spacing:inherit;color:inherit}
+/* 드래그(선택) 시 색 반전 */
+::selection{background:var(--fg);color:var(--bg)}
 button{cursor:pointer}
 @keyframes in{to{opacity:1;transform:none}}
 .a{opacity:0;transform:translateY(10px);animation:in .6s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--i)*.06s + .05s)}
@@ -239,7 +241,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    <div class="lab"><b>04</b><span>IMAGE</span></div>
    <label class="btn dash" id="imPick">+ 본문 이미지<input type="file" id="imFile" accept="image/*" hidden></label>
    <div id="imOpts" class="hide" style="margin-top:12px">
-    <div class="f"><label>위치</label><div class="seg" id="imPos"><button data-v="top">위</button><button data-v="bottom">아래</button><button data-v="left">왼쪽</button><button data-v="right">오른쪽</button></div></div>
+    <div class="f"><label>위치</label><div class="seg" id="imPos"><button data-v="top" aria-label="위" title="위"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><rect x=".75" y=".75" width="12.5" height="12.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity=".4"/><rect x="1.5" y="1.5" width="11" height="5" fill="currentColor"/></svg></button><button data-v="bottom" aria-label="아래" title="아래"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><rect x=".75" y=".75" width="12.5" height="12.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity=".4"/><rect x="1.5" y="7.5" width="11" height="5" fill="currentColor"/></svg></button><button data-v="left" aria-label="왼쪽" title="왼쪽"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><rect x=".75" y=".75" width="12.5" height="12.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity=".4"/><rect x="1.5" y="1.5" width="5" height="11" fill="currentColor"/></svg></button><button data-v="right" aria-label="오른쪽" title="오른쪽"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><rect x=".75" y=".75" width="12.5" height="12.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity=".4"/><rect x="7.5" y="1.5" width="5" height="11" fill="currentColor"/></svg></button></div></div>
     <div class="r2">
      <div class="f"><label>크기 <output id="imSizeO"></output></label><input type="range" id="imSize" min="80" max="700" step="10"></div>
      <div class="f"><label>확대 <output id="imZoomO"></output></label><input type="range" id="imZoom" min="100" max="300" step="5"></div>
