@@ -41,6 +41,7 @@ button{cursor:pointer}
 .stage{flex:1;display:grid;place-items:center;padding:16px;min-height:0;overflow:auto}
 #cv{display:block;max-width:100%;height:auto;box-shadow:0 0 0 1px var(--line);touch-action:none;cursor:grab}
 #cv.drag{cursor:grabbing}
+#rz{display:none}
 .bar{display:flex;align-items:center;gap:6px;padding:8px 16px;border-top:1px solid var(--line);background:var(--bg);font:700 10px var(--sans);letter-spacing:.1em}
 .bar .pg{display:flex;align-items:center;gap:2px;margin-right:auto}
 .bar .pg span{min-width:58px;text-align:center;font-variant-numeric:tabular-nums}
@@ -132,7 +133,12 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 }
 /* 데스크탑: 왼쪽 미리보기 고정, 오른쪽 패널 스크롤 */
 @media(min-width:900px){
- .app{grid-template-columns:minmax(0,1fr) 340px;height:100vh;min-height:0}
+ .app{grid-template-columns:minmax(0,1fr) var(--pw,340px);height:100vh;min-height:0;position:relative}
+ /* 패널 너비 조절 손잡이 */
+ #rz{display:block;position:absolute;top:0;bottom:0;left:calc(100% - var(--pw,340px) - 5px);width:10px;cursor:col-resize;z-index:20;touch-action:none}
+ #rz::after{content:"";position:absolute;top:0;bottom:0;left:4px;width:2px;background:var(--fg);opacity:0;transition:opacity .15s}
+ #rz:hover::after,#rz.on::after{opacity:1}
+ body.rz{cursor:col-resize;user-select:none}
  .pv{height:100vh;position:sticky;top:0}
  .stage{padding:28px}
  #cv{max-height:calc(100vh - 110px);width:auto}
@@ -150,6 +156,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
   </div>
  </section>
 
+ <div id="rz" title="드래그해서 너비 조절 · 더블클릭하면 원래대로"></div>
  <aside class="pn">
   <header class="hd a" style="--i:0"><h1><span class="pr">(</span><span class="cp">compact</span><span class="pr">)</span> r♡sieditor</h1></header>
 
@@ -675,6 +682,19 @@ $('#saveAll').addEventListener('click',async()=>{for(let i=0;i<pages.length;i++)
 $('#prev').addEventListener('click',()=>{if(page>0){page--;render()}});
 $('#next').addEventListener('click',()=>{if(page<pages.length-1){page++;render()}});
 let tT=0;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),1800)}
+
+/* ---- 패널 너비 조절 (데스크탑) ---- */
+const PW_KEY='rosie_compact_pw',PW_MIN=300,PW_MAX=720,PW_DEF=340;
+const app=$('.app'),rz=$('#rz');
+const setPW=w=>{w=Math.round(Math.max(PW_MIN,Math.min(PW_MAX,window.innerWidth-320,w)));app.style.setProperty('--pw',w+'px');return w};
+try{const v=+localStorage.getItem(PW_KEY);if(v)setPW(v)}catch(e){}
+let rzOn=false;
+rz.addEventListener('pointerdown',e=>{rzOn=true;rz.setPointerCapture(e.pointerId);rz.classList.add('on');document.body.classList.add('rz');e.preventDefault()});
+rz.addEventListener('pointermove',e=>{if(rzOn)setPW(window.innerWidth-e.clientX)});
+const rzEnd=()=>{if(!rzOn)return;rzOn=false;rz.classList.remove('on');document.body.classList.remove('rz');try{localStorage.setItem(PW_KEY,parseInt(getComputedStyle(app).getPropertyValue('--pw'))||PW_DEF)}catch(e){}};
+rz.addEventListener('pointerup',rzEnd);rz.addEventListener('pointercancel',rzEnd);
+window.addEventListener('resize',()=>{const v=parseInt(getComputedStyle(app).getPropertyValue('--pw'));if(v)setPW(v)});
+rz.addEventListener('dblclick',()=>{setPW(PW_DEF);try{localStorage.removeItem(PW_KEY)}catch(e){}});
 
 sync();render();loadFonts();
 </script>
