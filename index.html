@@ -220,7 +220,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
     <label class="btn dash" id="bgPick">+ 배경 이미지<input type="file" id="bgFile" accept="image/*" hidden></label>
     <div id="bgOpts" class="hide">
      <div class="r2" style="margin-top:12px">
-      <div class="f"><label>어둡게 ↔ 흐리게 <output id="bgToneO"></output></label><input type="range" id="bgTone" min="-80" max="80" step="5"></div>
+      <div class="f"><label>마스크 <output id="bgToneO"></output></label><input type="range" id="bgTone" min="0" max="90" step="5"></div>
       <div class="f"><label>확대 <output id="bgZoomO"></output></label><input type="range" id="bgZoom" min="100" max="300" step="5"></div>
      </div>
      <button class="btn" id="bgDel">배경 이미지 삭제</button>
@@ -294,6 +294,7 @@ const KEY='rosie_compact_v1';
 let S={...DEF};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}catch(e){}
 delete S.width;
+S.bgTone=Math.min(90,Math.abs(+S.bgTone||0));
 if(S.ratio==='4:3'){S.ratio='3:4';S.orient='landscape'}else if(S.ratio==='16:9'){S.ratio='9:16';S.orient='landscape'}else if(!(S.ratio in RATIO)&&S.ratio!=='auto')S.ratio='4:5';
 let bgImg=null,imImg=null,page=0,pages=[],layout=null;
 
@@ -464,7 +465,7 @@ function draw(ctx,p,total,scale){
  ctx.fillStyle=S.bg;ctx.fillRect(0,0,W,H);
  if(bgImg){
   cover(ctx,bgImg,{x:0,y:0,w:W,h:H},S.bgZoom,S.bgOX,S.bgOY);
-  if(S.bgTone<0){ctx.fillStyle=`rgba(0,0,0,${-S.bgTone/100})`;ctx.fillRect(0,0,W,H)}
+  /* 마스크는 배경색으로 덮음: 라이트=흰색, 다크=어두운색 */
   if(S.bgTone>0){ctx.fillStyle=hexA(S.bg,S.bgTone/100);ctx.fillRect(0,0,W,H)}
  }
  const r=imRect(p);
@@ -539,7 +540,7 @@ function set(k,v){S[k]=v;persist();if(k==='font'){wCache.clear();loadFonts()}ren
 /* ========== 컨트롤 바인딩 ========== */
 const fontSel=$('#font');
 Object.entries(FONTS).forEach(([k,v])=>fontSel.add(new Option(v.n,k)));
-const fmt={size:v=>v+'px',lh:v=>v+'%',ls:v=>(+v).toFixed(1),indent:v=>v+'px',margin:v=>v+'px',bgTone:v=>v>0?'+'+v:v,bgZoom:v=>v+'%',imSize:v=>v+'px',imZoom:v=>v+'%'};
+const fmt={size:v=>v+'px',lh:v=>v+'%',ls:v=>(+v).toFixed(1),indent:v=>v+'px',margin:v=>v+'px',bgTone:v=>v+'%',bgZoom:v=>v+'%',imSize:v=>v+'px',imZoom:v=>v+'%'};
 function sync(){
  ['title','text','fName','fSrc'].forEach(k=>{if($('#'+k).value!==S[k])$('#'+k).value=S[k]});
  fontSel.value=S.font;
@@ -574,7 +575,7 @@ $('#reset').addEventListener('click',()=>{if(!confirm('글은 그대로 두고 �
 
 /* ---- 이미지 ---- */
 function readImg(file,cb){if(!file)return;const u=URL.createObjectURL(file),im=new Image();im.onload=()=>cb(im);im.onerror=()=>toast('이미지를 읽지 못했어요');im.src=u}
-$('#bgFile').addEventListener('change',e=>readImg(e.target.files[0],im=>{bgImg=im;S.bgOX=S.bgOY=0;S.bgTone=-45;persist();e.target.value='';sync();render()}));
+$('#bgFile').addEventListener('change',e=>readImg(e.target.files[0],im=>{bgImg=im;S.bgOX=S.bgOY=0;S.bgTone=50;persist();e.target.value='';sync();render()}));
 $('#imFile').addEventListener('change',e=>readImg(e.target.files[0],im=>{imImg=im;S.imOX=S.imOY=0;e.target.value='';sync();render()}));
 $('#bgDel').addEventListener('click',()=>{bgImg=null;sync();render()});
 $('#imDel').addEventListener('click',()=>{imImg=null;sync();render()});
