@@ -574,7 +574,7 @@ $('#reset').addEventListener('click',()=>{if(!confirm('글은 그대로 두고 �
 
 /* ---- 이미지 ---- */
 function readImg(file,cb){if(!file)return;const u=URL.createObjectURL(file),im=new Image();im.onload=()=>cb(im);im.onerror=()=>toast('이미지를 읽지 못했어요');im.src=u}
-$('#bgFile').addEventListener('change',e=>readImg(e.target.files[0],im=>{bgImg=im;S.bgOX=S.bgOY=0;e.target.value='';sync();render()}));
+$('#bgFile').addEventListener('change',e=>readImg(e.target.files[0],im=>{bgImg=im;S.bgOX=S.bgOY=0;S.bgTone=-45;persist();e.target.value='';sync();render()}));
 $('#imFile').addEventListener('change',e=>readImg(e.target.files[0],im=>{imImg=im;S.imOX=S.imOY=0;e.target.value='';sync();render()}));
 $('#bgDel').addEventListener('click',()=>{bgImg=null;sync();render()});
 $('#imDel').addEventListener('click',()=>{imImg=null;sync();render()});
