@@ -122,6 +122,18 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 
 .toast{position:fixed;left:50%;bottom:76px;transform:translate(-50%,10px);background:var(--fg);color:var(--bg);font:700 10px var(--sans);letter-spacing:.1em;padding:9px 16px;opacity:0;pointer-events:none;transition:.25s;z-index:50;white-space:nowrap}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+/* 확인 창 */
+.dlg{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s}
+.dlg.on{opacity:1;pointer-events:auto}
+.dlg .bx{width:min(320px,100%);background:var(--bg);border:1px solid var(--fg);transform:translateY(8px);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.dlg.on .bx{transform:none}
+.dlg .tt{display:flex;justify-content:space-between;padding:8px 12px;background:var(--fg);color:var(--bg);font:700 10px var(--sans);letter-spacing:.12em}
+.dlg .ms{margin:0;padding:18px 14px 20px;font-size:13px;line-height:1.6;letter-spacing:-.03em;word-break:keep-all}
+.dlg .ms small{display:block;margin-top:4px;color:var(--mut);font-size:11.5px}
+.dlg .bt{display:flex;border-top:1px solid var(--fg)}
+.dlg .bt button{flex:1;border:0;background:none;padding:10px;font:700 10px var(--sans);letter-spacing:.1em}
+.dlg .bt button+button{border-left:1px solid var(--fg);background:var(--fg);color:var(--bg)}
+@media(hover:hover){.dlg .bt button:first-child:hover{background:var(--soft)}.dlg .bt button+button:hover{opacity:.85}}
 
 /* 모바일: 미리보기 위, 버튼 바는 아래 고정 */
 @media(max-width:899px){
@@ -281,6 +293,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
  </aside>
 </div>
 <div class="toast" id="toast"></div>
+<div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT"><div class="bx"><div class="tt"><span id="dlgT">RESET</span><span>r♡</span></div><p class="ms" id="dlgM"></p><div class="bt"><button id="dlgN">CANCEL</button><button id="dlgY">OK</button></div></div></div>
 
 <script>
 'use strict';
@@ -603,7 +616,13 @@ $('#hi').addEventListener('input',e=>{set('hi',e.target.value);sync()});
 $('#theme').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;Object.assign(S,THEMES[b.dataset.v]);persist();sync();render()});
 $('#hiSws').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;set('hi',b.dataset.c);sync()});
 
-$('#reset').addEventListener('click',()=>{if(!confirm('글은 그대로 두고 설정만 처음 상태로 돌릴까요?'))return;S={...DEF,title:S.title,text:S.text,fName:S.fName,fSrc:S.fSrc};persist();sync();clearMeasure();loadFonts();render()});
+/* 기본 confirm 대신 사이트 톤 확인 창 */
+function ask(title,msg,ok){return new Promise(res=>{const d=$('#dlg'),y=$('#dlgY'),n=$('#dlgN'),last=document.activeElement;
+ $('#dlgT').textContent=title;$('#dlgM').innerHTML=msg;y.textContent=ok||'OK';d.classList.add('on');y.focus();
+ const done=v=>{d.classList.remove('on');y.onclick=n.onclick=d.onclick=null;document.removeEventListener('keydown',key);last&&last.focus&&last.focus();res(v)};
+ const key=e=>{if(e.key==='Escape'){e.preventDefault();done(false)}};
+ y.onclick=()=>done(true);n.onclick=()=>done(false);d.onclick=e=>{if(e.target===d)done(false)};document.addEventListener('keydown',key)})}
+$('#reset').addEventListener('click',async()=>{if(!await ask('RESET','설정을 처음 상태로 돌릴까요?<small>글, 제목, 이름·출처는 그대로 남아요.</small>','RESET'))return;toast('RESET');S={...DEF,title:S.title,text:S.text,fName:S.fName,fSrc:S.fSrc};persist();sync();clearMeasure();loadFonts();render()});
 
 /* ---- 이미지 ---- */
 function readImg(file,cb){if(!file)return;const u=URL.createObjectURL(file),im=new Image();im.onload=()=>cb(im);im.onerror=()=>toast('이미지를 읽지 못했어요');im.src=u}
