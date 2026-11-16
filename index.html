@@ -47,9 +47,8 @@ button{cursor:pointer}
 
 .pn{padding:30px 22px 60px}
 .hd{margin-bottom:28px}
-.hd h1{margin:0;font:900 22px/1 var(--sans);letter-spacing:-.06em}
-.hd .cp{font-weight:400;color:var(--mut);letter-spacing:-.04em}
-.hd .pr{font-weight:400}
+.hd h1{margin:0;font:900 22px/1 var(--sans);letter-spacing:-.09em}
+.hd .cp,.hd .pr{font-weight:400;color:var(--mut);letter-spacing:-.07em}
 
 .sec{margin-bottom:34px}
 .lab{display:flex;justify-content:space-between;align-items:baseline;font:700 10px var(--sans);letter-spacing:.12em;color:var(--mut);padding-bottom:6px;border-bottom:2px solid var(--fg);margin-bottom:14px}
@@ -167,9 +166,8 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    </div>
    <textarea id="text" spellcheck="false" placeholder="여기에 붙여넣기"></textarea>
    </div>
-   <label class="chk" style="margin-top:10px"><input type="checkbox" id="hideQ">따옴표 기호 숨기기 <span style="color:var(--mut);font-weight:500">(색은 유지)</span></label>
    <p class="hint">
-    <code>{이름} 대사</code> <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬 · <code>&lt;sub&gt;</code> 자동 변환<br>
+    <code>{이름} 대사</code> <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬(따옴표 자동 제거) · <code>&lt;sub&gt;</code> 자동 변환<br>
     <code>*별표*</code> 보조색(별표 숨김) · <code>"대사"</code> 강조색 · <code>==형광펜==</code><br>
     <code>&gt; 인용</code> · <code>---</code> 구분선 · <code>===</code> 페이지 나눔
    </p>
@@ -288,7 +286,7 @@ const THEMES={light:{bg:'#ffffff',cText:'#777777',cAccent:'#000000',cSub:'#aaaaa
 const PARA=15, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30, FOOT_SIZE=13, SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
- ...THEMES.light,hi:'#FFB3EE',hideQ:false,
+ ...THEMES.light,hi:'#FFB3EE',
  ratio:'4:5',orient:'portrait',margin:70,bgTone:0,bgZoom:100,bgOX:0,bgOY:0,
  imPos:'top',imSize:360,imZoom:100,imOX:0,imOY:0,imBleed:false,imLine:false,
  fName:'',fSrc:'',fSep:'•',fAlign:'center',fNum:true};
@@ -348,7 +346,8 @@ const wCache=new Map();
 const fontOf=(bold,size)=>`${bold?700:400} ${size}px ${FONTS[S.font].css}`;
 function cw(ch,font){const k=font+'\u0000'+ch;let w=wCache.get(k);if(w==null){mc.font=font;w=mc.measureText(ch).width;wCache.set(k,w)}return w}
 function glyphs(g,size,forceBold){
- return g.filter(c=>!(S.hideQ&&c.qm)).map(c=>{const sz=c.sub?size*SUB_SCALE:size,font=fontOf(c.b||forceBold,sz);return{...c,sz,font,w:cw(c.ch,font)}});
+ /* 대사 본문의 따옴표 기호는 자동으로 뺌 */
+ return g.filter(c=>!(c.qm&&c.inDlg)).map(c=>{const sz=c.sub?size*SUB_SCALE:size,font=fontOf(c.b||forceBold,sz);return{...c,sz,font,w:cw(c.ch,font)}});
 }
 function wrap(gs,avail,first){
  const ls=S.ls,lines=[];let cur=[],cw_=0;
@@ -554,7 +553,6 @@ function sync(){
  document.querySelectorAll('#theme button').forEach(b=>b.classList.toggle('on',!!th&&th[0]===b.dataset.v));
  document.querySelectorAll('#hiSws button').forEach(b=>b.classList.toggle('on',b.dataset.c.toLowerCase()===S.hi.toLowerCase()));
  $('#hiSw').style.background=hexA(S.hi,HI_ALPHA);
- $('#hideQ').checked=S.hideQ;
  $('#bgOpts').classList.toggle('hide',!bgImg);$('#bgPick').classList.toggle('hide',!!bgImg);
  $('#imOpts').classList.toggle('hide',!imImg);$('#imPick').classList.toggle('hide',!!imImg);
 }
@@ -571,7 +569,7 @@ $('#hi').addEventListener('input',e=>{set('hi',e.target.value);sync()});
  set(k,b.dataset.v);sync()}));
 $('#theme').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;Object.assign(S,THEMES[b.dataset.v]);persist();sync();render()});
 $('#hiSws').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;set('hi',b.dataset.c);sync()});
-$('#hideQ').addEventListener('change',e=>set('hideQ',e.target.checked));
+
 $('#reset').addEventListener('click',()=>{if(!confirm('글은 그대로 두고 설정만 처음 상태로 돌릴까요?'))return;S={...DEF,title:S.title,text:S.text,fName:S.fName,fSrc:S.fSrc};persist();sync();wCache.clear();loadFonts();render()});
 
 /* ---- 이미지 ---- */
