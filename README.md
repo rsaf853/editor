@@ -1,4 +1,4 @@
-## r♡sie compact editor
+## r♡sieditor
 
 문장을 이미지 카드로 만드는 에디터의 간소화 버전입니다. `index.html` 파일 하나로 동작합니다.
 
