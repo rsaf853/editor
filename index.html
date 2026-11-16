@@ -64,7 +64,9 @@ input[type=text],select,textarea{width:100%;border:1px solid var(--line);backgro
 input[type=text]:focus,select:focus,textarea:focus{border-color:var(--fg)}
 input::placeholder,textarea::placeholder{color:var(--mut)}
 select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--fg) 50%),linear-gradient(135deg,var(--fg) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:28px}
-textarea{display:block;resize:vertical;min-height:260px;line-height:1.7;font-size:14px;border-top:0}
+textarea{display:block;resize:vertical;min-height:260px;line-height:1.7;font-size:14px}
+.ed{border:1px solid var(--line)}.ed:focus-within{border-color:var(--fg)}
+.ed textarea{border:0;padding:12px}
 textarea.ti{min-height:0;height:40px;resize:none;border-top:1px solid var(--line)}
 
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;background:none;margin:0}
@@ -85,12 +87,12 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 .cl input::-moz-color-swatch{border:0}
 .cl span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-.tb{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-bottom:0}
-.tb button{border:0;border-right:1px solid var(--line);background:none;min-width:38px;height:34px;padding:0 9px;font:600 12px var(--sans);letter-spacing:0;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.tb{display:flex;align-items:center;gap:2px;padding:5px 6px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}.tb::-webkit-scrollbar{display:none}
+.tb button{flex:none;border:0;background:none;width:30px;height:28px;padding:0;font:600 13px/1 var(--sans);letter-spacing:0;display:inline-flex;align-items:center;justify-content:center}
 .tb button:hover{background:var(--fg);color:var(--bg)}
-.tb button.on{background:var(--fg);color:var(--bg)}
-.tb .sp{flex:1}
-.tb .sw{width:10px;height:10px;border:1px solid var(--line);display:inline-block}
+.tb .dv{flex:none;width:1px;height:14px;background:var(--line);margin:0 5px}
+.tb .sw{width:13px;height:13px;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.tb .sb small{font-size:8px;margin:5px 0 0 1px}
 .hint{margin:6px 0 0;color:var(--mut);font-size:11px;line-height:1.7;letter-spacing:-.02em}
 .hint code{font:600 11px var(--sans);color:var(--fg);background:var(--soft);padding:0 4px}
 
@@ -118,7 +120,6 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
  .pv{position:relative}
  .stage{padding:18px 16px}
  #cv{max-height:44vh;width:auto}
- .tb{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.tb::-webkit-scrollbar{display:none}.tb button{flex:none}
  .bar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
  .pn{padding:28px 16px 110px}
 }
@@ -149,19 +150,22 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
   <div class="sec a" style="--i:1">
    <div class="lab"><b>01</b><span>TEXT</span></div>
    <div class="f"><textarea id="title" class="ti" rows="1" placeholder="제목 (비워두면 생략)"></textarea></div>
+   <div class="ed">
    <div class="tb" id="tb">
     <button data-w="**" title="굵게 (Ctrl+B)"><b>B</b></button>
     <button data-w="__" title="밑줄 (Ctrl+U)"><u>U</u></button>
     <button data-w="~~" title="취소선"><s>S</s></button>
-    <button data-w="==" title="형광펜"><span class="sw" id="hiSw"></span>형광펜</button>
-    <button data-l="> " title="인용 바">인용</button>
-    <button data-sub title="작은 글씨">sub</button>
-    <button data-ins="---" title="구분선">―</button>
-    <button data-ins="===" title="페이지 나눔">⏎p</button>
-    <span class="sp"></span>
-    <button id="hideQ" title="따옴표 기호만 숨김 (색은 유지)">" " 지우기</button>
+    <i class="dv"></i>
+    <button data-w="==" title="형광펜 (Ctrl+H)" class="hb"><span class="sw" id="hiSw"></span></button>
+    <button data-l="> " title="인용"><svg viewBox="0 0 14 14" width="14" height="14" fill="currentColor" aria-hidden="true"><rect x="1" y="1" width="2" height="12"/><rect x="5" y="3" width="8" height="1.5"/><rect x="5" y="6.25" width="8" height="1.5"/><rect x="5" y="9.5" width="5" height="1.5"/></svg></button>
+    <button data-sub title="작은 글씨 &lt;sub&gt;" class="sb">x<small>2</small></button>
+    <i class="dv"></i>
+    <button data-ins="---" title="구분선"><svg viewBox="0 0 14 14" width="14" height="14" fill="currentColor" aria-hidden="true"><rect x="1" y="6.25" width="12" height="1.5"/></svg></button>
+    <button data-ins="===" title="페이지 나눔"><svg viewBox="0 0 14 14" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M3 1h8v4.5H9.5V2.5h-5v3H3z"/><path d="M3 8.5h1.5v3h5v-3H11V13H3z"/><rect x="0.5" y="6.25" width="13" height="1.5" opacity=".45"/></svg></button>
    </div>
    <textarea id="text" spellcheck="false" placeholder="여기에 붙여넣기"></textarea>
+   </div>
+   <label class="chk" style="margin-top:10px"><input type="checkbox" id="hideQ">따옴표 기호 숨기기 <span style="color:var(--mut);font-weight:500">(색은 유지)</span></label>
    <p class="hint">
     <code>{이름} 대사</code> <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬 · <code>&lt;sub&gt;</code> 자동 변환<br>
     <code>*별표*</code> 보조색(별표 숨김) · <code>"대사"</code> 강조색 · <code>==형광펜==</code><br>
@@ -548,7 +552,7 @@ function sync(){
  document.querySelectorAll('#theme button').forEach(b=>b.classList.toggle('on',!!th&&th[0]===b.dataset.v));
  document.querySelectorAll('#hiSws button').forEach(b=>b.classList.toggle('on',b.dataset.c.toLowerCase()===S.hi.toLowerCase()));
  $('#hiSw').style.background=hexA(S.hi,HI_ALPHA);
- $('#hideQ').classList.toggle('on',S.hideQ);
+ $('#hideQ').checked=S.hideQ;
  $('#bgOpts').classList.toggle('hide',!bgImg);$('#bgPick').classList.toggle('hide',!!bgImg);
  $('#imOpts').classList.toggle('hide',!imImg);$('#imPick').classList.toggle('hide',!!imImg);
 }
@@ -565,7 +569,7 @@ $('#hi').addEventListener('input',e=>{set('hi',e.target.value);sync()});
  set(k,b.dataset.v);sync()}));
 $('#theme').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;Object.assign(S,THEMES[b.dataset.v]);persist();sync();render()});
 $('#hiSws').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;set('hi',b.dataset.c);sync()});
-$('#hideQ').addEventListener('click',()=>{set('hideQ',!S.hideQ);sync()});
+$('#hideQ').addEventListener('change',e=>set('hideQ',e.target.checked));
 $('#reset').addEventListener('click',()=>{if(!confirm('글은 그대로 두고 설정만 처음 상태로 돌릴까요?'))return;S={...DEF,title:S.title,text:S.text,fName:S.fName,fSrc:S.fSrc};persist();sync();wCache.clear();loadFonts();render()});
 
 /* ---- 이미지 ---- */
@@ -622,7 +626,7 @@ function insertLine(s){
  const str=(before&&!before.endsWith('\n')?'\n':'')+s+(after.startsWith('\n')?'':'\n');replaceSel(a,ta.selectionEnd,str);
 }
 $('#tb').addEventListener('mousedown',e=>{if(e.target.closest('button'))e.preventDefault()});
-$('#tb').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.id==='hideQ')return;
+$('#tb').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.w)wrapSel(b.dataset.w);else if(b.dataset.l)prefixLines(b.dataset.l);else if('sub' in b.dataset)subLines();else if(b.dataset.ins)insertLine(b.dataset.ins)});
 ta.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey))return;const k=e.key.toLowerCase();
  if(k==='b'){e.preventDefault();wrapSel('**')}else if(k==='u'){e.preventDefault();wrapSel('__')}else if(k==='h'||(e.shiftKey&&k==='y')){e.preventDefault();wrapSel('==')}});
