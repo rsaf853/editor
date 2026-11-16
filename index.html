@@ -55,11 +55,12 @@ button{cursor:pointer}
 .f{margin-bottom:13px}
 .f>label,.lb{display:flex;justify-content:space-between;font:600 11px var(--sans);letter-spacing:-.01em;color:var(--mut);margin-bottom:5px}
 .f>label output{color:var(--fg);font-variant-numeric:tabular-nums}
+.num{display:flex;align-items:center;border:1px solid var(--line)}.num:focus-within{border-color:var(--fg)}.num input{border:0!important;flex:1;min-width:0;font-variant-numeric:tabular-nums;-moz-appearance:textfield}.num input::-webkit-inner-spin-button{-webkit-appearance:none}.num span{padding:0 10px;color:var(--mut);font:600 11px var(--sans)}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .r3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 
-input[type=text],select,textarea{width:100%;border:1px solid var(--line);background:var(--bg);padding:8px 10px;outline:0;font-size:14px}
-input[type=text]:focus,select:focus,textarea:focus{border-color:var(--fg)}
+input[type=text],input[type=number],select,textarea{width:100%;border:1px solid var(--line);background:var(--bg);padding:8px 10px;outline:0;font-size:14px}
+input[type=text]:focus,input[type=number]:focus,select:focus,textarea:focus{border-color:var(--fg)}
 input::placeholder,textarea::placeholder{color:var(--mut)}
 select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--fg) 50%),linear-gradient(135deg,var(--fg) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:28px}
 textarea{display:block;resize:vertical;min-height:260px;line-height:1.7;font-size:14px;border-top:0}
@@ -204,11 +205,12 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
   <!-- 03 CANVAS -->
   <div class="sec a" style="--i:3">
    <div class="lab"><b>03</b><span>CANVAS</span></div>
-   <div class="f"><label>비율</label><div class="seg" id="ratio"><button data-v="1:1">1:1</button><button data-v="4:5">4:5</button><button data-v="3:4">3:4</button><button data-v="9:16">9:16</button><button data-v="auto">자동</button></div></div>
+   <div class="f"><label>비율</label><div class="seg" id="ratio"><button data-v="1:1">1:1</button><button data-v="4:5">4:5</button><button data-v="3:4">3:4</button><button data-v="9:16">9:16</button><button data-v="4:3">4:3</button><button data-v="16:9">16:9</button><button data-v="auto">자동</button></div></div>
    <div class="r2">
-    <div class="f"><label>여백 <output id="marginO"></output></label><input type="range" id="margin" min="30" max="160" step="5"></div>
-    <div class="f"><label>배경색</label><div class="r2" style="gap:6px"><label class="cl"><input type="color" id="bg"><span>색</span></label><div class="seg" id="theme"><button data-v="light">L</button><button data-v="dark">D</button></div></div></div>
+    <div class="f"><label>가로 폭</label><div class="num"><input type="number" id="width" min="300" max="2000" step="10" inputmode="numeric"><span>px</span></div></div>
+    <div class="f"><label>여백 <output id="marginO"></output></label><input type="range" id="margin" min="20" max="200" step="5"></div>
    </div>
+   <div class="f"><label>배경색</label><div class="r2"><label class="cl"><input type="color" id="bg"><span>직접 선택</span></label><div class="seg" id="theme"><button data-v="light">LIGHT</button><button data-v="dark">DARK</button></div></div></div>
    <div class="f">
     <label class="btn dash" id="bgPick">+ 배경 이미지<input type="file" id="bgFile" accept="image/*" hidden></label>
     <div id="bgOpts" class="hide">
@@ -263,7 +265,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 <script>
 'use strict';
 const $=s=>document.querySelector(s);
-const W=800;
+let W=800;
 const SANS_FB="'Pretendard JP Variable','Noto Sans KR',sans-serif",SERIF_FB="'Noto Serif KR',serif";
 const FONTS={
  pretendard:{n:'프리텐다드',css:"'Pretendard JP Variable',"+SANS_FB},
@@ -273,14 +275,14 @@ const FONTS={
  nexon:{n:'넥슨 Lv.1 고딕',css:"'NexonLv1Gothic',"+SANS_FB},
  paperlogy:{n:'페이퍼로지',css:"'Paperlogy',"+SANS_FB}
 };
-const RATIO={'1:1':1,'4:5':1.25,'3:4':4/3,'9:16':16/9};
+const RATIO={'1:1':1,'4:5':1.25,'3:4':4/3,'9:16':16/9,'4:3':.75,'16:9':9/16};
 const THEMES={light:{bg:'#ffffff',cText:'#777777',cAccent:'#000000',cSub:'#aaaaaa'},dark:{bg:'#111111',cText:'#9a9a9a',cAccent:'#ffffff',cSub:'#5f5f5f'}};
 /* 고정값 */
 const PARA=15, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30, FOOT_SIZE=13, SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
  ...THEMES.light,hi:'#FFB3EE',hideQ:false,
- ratio:'4:5',margin:70,bgTone:0,bgZoom:100,bgOX:0,bgOY:0,
+ ratio:'4:5',width:800,margin:70,bgTone:0,bgZoom:100,bgOX:0,bgOY:0,
  imPos:'top',imSize:360,imZoom:100,imOX:0,imOY:0,imBleed:false,imLine:false,
  fName:'',fSrc:'',fSep:'•',fAlign:'center',fNum:true};
 const KEY='rosie_compact_v1';
@@ -360,10 +362,11 @@ function wrap(gs,avail,first){
 
 /* ========== 레이아웃 & 페이지 ========== */
 function build(){
+ W=Math.max(300,Math.min(2000,Math.round(+S.width)||800));
  const blocks=parse(S.text),size=S.size,lh=size*S.lh/100,my=S.margin,mx=S.margin;
  const hasIm=!!imImg,col=hasIm&&(S.imPos==='left'||S.imPos==='right'),band=hasIm&&!col;
  const colW=col?S.imSize+IMG_GAP:0;
- const cwid=W-2*mx-(col?(S.imBleed?Math.max(0,S.imSize+IMG_GAP-mx):colW):0);
+ const cwid=Math.max(80,W-2*mx-(col?(S.imBleed?Math.max(0,S.imSize+IMG_GAP-mx):colW):0));
  const cx=col&&S.imPos==='left'?(S.imBleed?S.imSize+IMG_GAP:mx+colW):mx;
  // 대사 이름 칸 폭: 문서 전체에서 가장 긴 이름 기준
  let nameW=0;blocks.forEach(b=>{if(b.k==='dlg'){const f=fontOf(1,size);let w=0;for(const ch of b.name)w+=cw(ch,f)+S.ls;nameW=Math.max(nameW,w-S.ls)}});
@@ -532,7 +535,7 @@ Object.entries(FONTS).forEach(([k,v])=>fontSel.add(new Option(v.n,k)));
 const fmt={size:v=>v+'px',lh:v=>v+'%',ls:v=>(+v).toFixed(1),indent:v=>v+'px',margin:v=>v+'px',bgTone:v=>v>0?'+'+v:v,bgZoom:v=>v+'%',imSize:v=>v+'px',imZoom:v=>v+'%'};
 function sync(){
  ['title','text','fName','fSrc'].forEach(k=>{if($('#'+k).value!==S[k])$('#'+k).value=S[k]});
- fontSel.value=S.font;
+ fontSel.value=S.font;if(document.activeElement!==$('#width'))$('#width').value=S.width;
  Object.keys(fmt).forEach(k=>{$('#'+k).value=S[k];$('#'+k+'O').textContent=fmt[k](S[k])});
  ['cText','cAccent','cSub','bg','hi'].forEach(k=>$('#'+k).value=S[k]);
  ['imBleed','imLine','fNum'].forEach(k=>$('#'+k).checked=S[k]);
@@ -548,6 +551,8 @@ function sync(){
 ['title','text','fName','fSrc'].forEach(k=>$('#'+k).addEventListener('input',e=>{set(k,e.target.value);if(k!=='fName'&&k!=='fSrc')loadFontsSoon()}));
 let lfT=0;function loadFontsSoon(){clearTimeout(lfT);lfT=setTimeout(loadFonts,500)}
 fontSel.addEventListener('change',e=>set('font',e.target.value));
+$('#width').addEventListener('input',e=>{const v=+e.target.value;if(v>=300&&v<=2000)set('width',v)});
+$('#width').addEventListener('change',e=>{const v=Math.max(300,Math.min(2000,Math.round(+e.target.value)||800));e.target.value=v;set('width',v)});
 Object.keys(fmt).forEach(k=>$('#'+k).addEventListener('input',e=>{const v=+e.target.value;$('#'+k+'O').textContent=fmt[k](v);set(k,v)}));
 ['cText','cAccent','cSub','bg'].forEach(k=>$('#'+k).addEventListener('input',e=>{set(k,e.target.value);sync()}));
 $('#hi').addEventListener('input',e=>{set('hi',e.target.value);sync()});
@@ -625,7 +630,7 @@ ta.addEventListener('paste',e=>{const t=e.clipboardData&&e.clipboardData.getData
 
 /* ---- 내보내기 ---- */
 const EXPORT_SCALE=2;
-function pageBlob(i){return new Promise(res=>{const p=pages[i],c=document.createElement('canvas');c.width=W*EXPORT_SCALE;c.height=Math.round(p.H*EXPORT_SCALE);draw(c.getContext('2d'),p,pages.length,EXPORT_SCALE);c.toBlob(res,'image/png')})}
+function pageBlob(i){return new Promise(res=>{const p=pages[i],c=document.createElement('canvas');const sc=Math.min(EXPORT_SCALE,4000/W,8000/p.H);c.width=Math.round(W*sc);c.height=Math.round(p.H*sc);draw(c.getContext('2d'),p,pages.length,sc);c.toBlob(res,'image/png')})}
 const fname=i=>`rosie_${new Date().toISOString().slice(2,10).replace(/-/g,'')}${pages.length>1?'_'+(i+1):''}.png`;
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 $('#copy').addEventListener('click',async()=>{
