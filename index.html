@@ -169,7 +169,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    <p class="hint">
     <code>{이름} 대사</code> <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬(따옴표 자동 제거) · <code>&lt;sub&gt;</code> 자동 변환<br>
     <code>*별표*</code> 보조색(별표 숨김) · <code>"대사"</code> 강조색 · <code>==형광펜==</code><br>
-    <code>&gt; 인용</code> · <code>---</code> 구분선 · <code>===</code> 페이지 나눔
+    <code>&gt; 인용</code> · <code>## 소제목</code> · <code>- 목록</code> · <code>---</code> 구분선 · <code>===</code> 페이지 나눔
    </p>
   </div>
 
@@ -336,6 +336,8 @@ function parse(text){
   if(!t){out.push({k:'blank'});continue}
   if((m=t.match(/^<sub>(.*)<\/sub>$/i))&&!/<\/?sub>/i.test(m[1])){out.push({k:'sub',g:inline(m[1]).map(c=>({...c,sub:1}))});continue}
   if((m=t.match(/^>\s?(.*)$/))){out.push({k:'quote',g:inline(m[1])});continue}
+  if((m=t.match(/^#{1,6}\s+(.*)$/))){out.push({k:'p',g:inline(m[1]).map(c=>({...c,head:1}))});continue}
+  if((m=t.match(/^([-*•·–])\s+(.+)$/))){out.push({k:'li',mark:m[1]==='*'?'•':m[1],g:inline(m[2])});continue}
   let d=null;for(const re of DLG){if((m=t.match(re))&&m[1].trim()){d={name:m[1].trim(),body:m[2]};break}}
   if(d){out.push({k:'dlg',name:d.name,g:inline(d.body).map(c=>({...c,inDlg:1}))});continue}
   out.push({k:'p',g:inline(raw.replace(/^\s+/,''))});
@@ -348,9 +350,16 @@ const mc=document.createElement('canvas').getContext('2d');
 const wCache=new Map();
 const fontOf=(bold,size)=>`${bold?700:400} ${size}px ${FONTS[S.font].css}`;
 function cw(ch,font){const k=font+'\u0000'+ch;let w=wCache.get(k);if(w==null){mc.font=font;w=mc.measureText(ch).width;wCache.set(k,w)}return w}
+/* 글자쌍 간격(커닝): 두 글자를 붙여 잰 폭 - 각각 잰 폭. 한 글자씩 그려도 영문 대문자 뒤가 벌어지지 않게 */
+const kCache=new Map();
+function clearMeasure(){wCache.clear();kCache.clear()}
+function kern(a,b,font){if(!b||a===' '||b===' ')return 0;const k=font+'\u0000'+a+b;let v=kCache.get(k);if(v==null){mc.font=font;v=mc.measureText(a+b).width-cw(a,font)-cw(b,font);if(Math.abs(v)<.01)v=0;kCache.set(k,v)}return v}
+function kernAll(gs){for(let i=0;i<gs.length;i++){const g=gs[i],n=gs[i+1];g.w=cw(g.ch,g.font)+(n&&n.font===g.font?kern(g.ch,n.ch,g.font):0)}return gs}
+/* 문자열을 글자별 x 위치로 (이름·출처용) */
+function advs(str,font){const cs=[...str];return cs.map((ch,i)=>cw(ch,font)+kern(ch,cs[i+1],font)+S.ls)}
 function glyphs(g,size,forceBold){
  /* 대사 본문의 따옴표 기호는 자동으로 뺌 */
- return g.filter(c=>!(c.qm&&c.inDlg)).map(c=>{const sz=c.sub?size*SUB_SCALE:size,font=fontOf(c.b||forceBold,sz);return{...c,sz,font,w:cw(c.ch,font)}});
+ return kernAll(g.filter(c=>!(c.qm&&c.inDlg)).map(c=>{const sz=c.sub?size*SUB_SCALE:size,font=fontOf(c.b||c.head||forceBold,sz);return{...c,sz,font}}));
 }
 function wrap(gs,avail,first){
  const ls=S.ls,lines=[];let cur=[],cw_=0;
@@ -379,13 +388,13 @@ function build(){
  const cwid=Math.max(80,W-2*mx-(col?(S.imBleed?Math.max(0,S.imSize+IMG_GAP-mx):colW):0));
  const cx=col&&S.imPos==='left'?(S.imBleed?S.imSize+IMG_GAP:mx+colW):mx;
  // 대사 이름 칸 폭: 문서 전체에서 가장 긴 이름 기준
- let nameW=0;blocks.forEach(b=>{if(b.k==='dlg'){const f=fontOf(1,size);let w=0;for(const ch of b.name)w+=cw(ch,f)+S.ls;nameW=Math.max(nameW,w-S.ls)}});
+ let nameW=0;blocks.forEach(b=>{if(b.k==='dlg'){const w=advs(b.name,fontOf(1,size)).reduce((a,c)=>a+c,0)-S.ls;nameW=Math.max(nameW,w)}});
  const nameCol=nameW?Math.min(Math.ceil(nameW)+NAME_GAP,cwid*.45):0;
 
  const items=[];let prev=null,lastDlg=false;
  // 제목
  if(S.title.trim()){
-  const tf=fontOf(1,TITLE_SIZE),tg=[...S.title.trim().replace(/\s*\n\s*/g,' ')].map(ch=>({ch,b:1,sz:TITLE_SIZE,font:tf,w:cw(ch,tf),title:1}));
+  const tf=fontOf(1,TITLE_SIZE),tg=[...S.title.trim().replace(/\s*\n\s*/g,' ')].map(ch=>({ch,b:1,sz:TITLE_SIZE,font:tf,title:1}));kernAll(tg);
   const tl=wrap(tg,cwid,0),tlh=TITLE_SIZE*1.45;
   tl.forEach((l,i)=>items.push({k:'line',l,x:0,w:cwid,h:tlh,gap:0,align:'left',sz:TITLE_SIZE}));
   items.push({k:'space',h:0,gap:TITLE_GAP-PARA});
@@ -403,14 +412,16 @@ function build(){
    wrap(gs,cwid-nameCol,0).forEach((l,i)=>items.push({k:'line',l,x:nameCol,w:cwid-nameCol,h:sl,gap:i?0:2,align:S.align==='center'?'left':S.align,sz:size*SUB_SCALE}));
    prev='sub';return;
   }
-  const isQ=b.k==='quote',isD=b.k==='dlg',isS=b.k==='sub';
-  const x=isD?nameCol:isQ?QUOTE_PAD:0,w=cwid-x;
+  const isQ=b.k==='quote',isD=b.k==='dlg',isS=b.k==='sub',isL=b.k==='li';
+  /* 목록: 기호 뒤로 둘째 줄부터 들여 맞춤 */
+  const liW=isL?Math.ceil(cw(b.mark,fontOf(0,size))+size*.5):0;
+  const x=isD?nameCol:isQ?QUOTE_PAD:isL?liW:0,w=cwid-x;
   const gs=glyphs(b.g,size);
   const first=(b.k==='p'||isQ)?S.indent:0;
-  const al=isD&&S.align==='center'?'left':S.align;
+  const al=(isD||isL)&&S.align==='center'?'left':S.align;
   const lhh=isS?lh*SUB_SCALE:lh;
   wrap(gs,w,first).forEach((l,i)=>{
-   items.push({k:'line',l,x,w,h:lhh,gap:i?0:(isQ&&prev==='quote'?PARA:gapB),align:al,indent:i===0?first:0,quote:isQ,qJoin:isQ&&(i>0||prev==='quote'),name:isD&&i===0?b.name:null,sz:isS?size*SUB_SCALE:size});
+   items.push({k:'line',l,x,w,h:lhh,gap:i?0:(isQ&&prev==='quote'?PARA:gapB),align:al,indent:i===0?first:0,quote:isQ,qJoin:isQ&&(i>0||prev==='quote'),name:isD&&i===0?b.name:null,mark:isL&&i===0?b.mark:null,sz:isS?size*SUB_SCALE:size});
   });
   prev=isQ?'quote':b.k;lastDlg=isD||(lastDlg&&isS);
  });
@@ -484,7 +495,8 @@ function draw(ctx,p,total,scale){
   if(it.k!=='line')continue;
   const l=it.l,base=y+it.h/2+it.sz*.36;
   if(it.quote){ctx.fillStyle=S.cAccent;const top=it.qJoin?y-it.gapUsed:y;ctx.fillRect(ox,top,2,y+it.h-top)}
-  if(it.name){ctx.font=fontOf(1,S.size);ctx.fillStyle=S.cAccent;let nx=ox;for(const ch of it.name){ctx.fillText(ch,nx,base);nx+=cw(ch,ctx.font)+ls}}
+  if(it.name){ctx.font=fontOf(1,S.size);ctx.fillStyle=S.cAccent;let nx=ox;const a=advs(it.name,ctx.font);[...it.name].forEach((ch,i)=>{ctx.fillText(ch,nx,base);nx+=a[i]})}
+  if(it.mark){ctx.font=fontOf(0,S.size);ctx.fillStyle=S.cText;ctx.fillText(it.mark,ox,base)}
   const avail=it.w-(it.indent||0);
   let x=ox+it.x+(it.indent||0),extra=0,spaces=0;
   if(it.align==='center')x+=(avail-l.w)/2;
@@ -498,7 +510,7 @@ function draw(ctx,p,total,scale){
    const a=pos[i]-2,b=pos[j]+l.gs[j].w+2,sz=it.sz;ctx.fillRect(a,base-sz*.9,b-a,sz*1.18);i=j}
   l.gs.forEach((g,i)=>{
    if(g.ch===' ')return;
-   const col=g.title?S.cAccent:g.sub||g.a?S.cSub:(g.q&&!g.inDlg)?S.cAccent:S.cText;
+   const col=g.title||g.head?S.cAccent:g.sub||g.a?S.cSub:(g.q&&!g.inDlg)?S.cAccent:S.cText;
    ctx.font=g.font;ctx.fillStyle=col;ctx.fillText(g.ch,pos[i],base);
    const ww=g.w+(i<l.gs.length-1?ls+(per&&!spaces?per:0):0);
    if(g.u)ctx.fillRect(pos[i],base+g.sz*.14,ww,Math.max(1,g.sz/18));
@@ -510,11 +522,11 @@ function draw(ctx,p,total,scale){
  if(S.fNum&&total>1)parts.push(`${p.idx+1} / ${total}`);
  if(parts.length){
   const txt=parts.join(`  ${S.fSep}  `),f=fontOf(0,FOOT_SIZE);ctx.font=f;ctx.fillStyle=S.cSub;
-  let w=0;for(const ch of txt)w+=cw(ch,f)+ls;w-=ls;
+  const fa=advs(txt,f),w=fa.reduce((a,c)=>a+c,0)-ls;
   const af=p.afterH>0,fy=af?oy+p.y+FOOT_GAP+FOOT_SIZE*.9:H-p.bottomPad/2+FOOT_SIZE*.36;
   const inner=af?{a:p.cx,b:p.cx+p.cwid}:S.imBleed&&p.col?(S.imPos==='left'?{a:S.imSize+IMG_GAP,b:W-S.margin}:{a:S.margin,b:W-S.imSize-IMG_GAP}):{a:S.margin,b:W-S.margin};
   let fx=S.fAlign==='left'?inner.a:S.fAlign==='right'?inner.b-w:(inner.a+inner.b-w)/2;
-  for(const ch of txt){ctx.fillText(ch,fx,fy);fx+=cw(ch,f)+ls}
+  [...txt].forEach((ch,i)=>{ctx.fillText(ch,fx,fy);fx+=fa[i]})
  }
 }
 
@@ -535,13 +547,13 @@ function paint(){
 function loadFonts(){
  const sample=(S.title+S.text+S.fName+S.fSrc).slice(0,3000)||'가나다';
  const css=FONTS[S.font].css;
- Promise.all([document.fonts.load(`400 20px ${css}`,sample),document.fonts.load(`700 20px ${css}`,sample)]).then(()=>{wCache.clear();render()}).catch(()=>{});
+ Promise.all([document.fonts.load(`400 20px ${css}`,sample),document.fonts.load(`700 20px ${css}`,sample)]).then(()=>{clearMeasure();render()}).catch(()=>{});
 }
-document.fonts&&document.fonts.addEventListener('loadingdone',()=>{wCache.clear();render()});
+document.fonts&&document.fonts.addEventListener('loadingdone',()=>{clearMeasure();render()});
 
 let saveT=0;
 function persist(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}},300)}
-function set(k,v){S[k]=v;persist();if(k==='font'){wCache.clear();loadFonts()}render()}
+function set(k,v){S[k]=v;persist();if(k==='font'){clearMeasure();loadFonts()}render()}
 
 /* ========== 컨트롤 바인딩 ========== */
 const fontSel=$('#font');
@@ -577,7 +589,7 @@ $('#hi').addEventListener('input',e=>{set('hi',e.target.value);sync()});
 $('#theme').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;Object.assign(S,THEMES[b.dataset.v]);persist();sync();render()});
 $('#hiSws').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;set('hi',b.dataset.c);sync()});
 
-$('#reset').addEventListener('click',()=>{if(!confirm('글은 그대로 두고 설정만 처음 상태로 돌릴까요?'))return;S={...DEF,title:S.title,text:S.text,fName:S.fName,fSrc:S.fSrc};persist();sync();wCache.clear();loadFonts();render()});
+$('#reset').addEventListener('click',()=>{if(!confirm('글은 그대로 두고 설정만 처음 상태로 돌릴까요?'))return;S={...DEF,title:S.title,text:S.text,fName:S.fName,fSrc:S.fSrc};persist();sync();clearMeasure();loadFonts();render()});
 
 /* ---- 이미지 ---- */
 function readImg(file,cb){if(!file)return;const u=URL.createObjectURL(file),im=new Image();im.onload=()=>cb(im);im.onerror=()=>toast('이미지를 읽지 못했어요');im.src=u}
