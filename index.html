@@ -518,7 +518,7 @@ function draw(ctx,p,total,scale){
  ctx.textBaseline='alphabetic';
  for(const it of p.items){
   const y=oy+it.y;
-  if(it.k==='hr'){ctx.fillStyle=S.cSub;ctx.fillRect(ox,Math.round(y+it.h/2),p.cwid,1);continue}
+  if(it.k==='hr'){ctx.fillStyle=hexA(S.cSub,.5);ctx.fillRect(ox,Math.round(y+it.h/2),p.cwid,1);continue}
   if(it.k!=='line')continue;
   const l=it.l,base=y+it.h/2+it.sz*.36;
   if(it.quote){ctx.fillStyle=S.cAccent;const top=it.qJoin?y-it.gapUsed:y;ctx.fillRect(ox,top,2,y+it.h-top)}
