@@ -657,7 +657,7 @@ function sync(){
  document.querySelectorAll('#orient button,#vAlign button').forEach(b=>b.disabled=S.ratio==='auto');
  Object.keys(fmt).forEach(k=>{$('#'+k).value=S[k];$('#'+k+'O').textContent=fmt[k](S[k])});
  ['cText','cAccent','cSub','cPoint','bg','hi'].forEach(k=>$('#'+k).value=S[k]);
- $('#ptSw').style.borderBottomColor=S.cPoint;$('#ptSw').style.color=S.cPoint;
+ $('#ptSw').style.borderBottomColor=S.cPoint;
  ['imBleed','imLine','fNum'].forEach(k=>$('#'+k).checked=S[k]);
  [['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign'],['hiMode','hiMode']].forEach(([id,k])=>document.querySelectorAll(`#${id} button`).forEach(b=>b.classList.toggle('on',b.dataset.v===S[k])));
  const th=Object.entries(THEMES).find(([,t])=>t.bg===S.bg&&t.cText===S.cText);
