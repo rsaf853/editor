@@ -465,7 +465,7 @@ function build(){
  const auto=S.ratio==='auto',r0=RATIO[S.ratio]||1.25,H=auto?0:Math.round(W*(S.orient==='landscape'?1/r0:r0));
  const paginate=numOn=>{
   const srcBottom=hasSrc&&!after;
-  const bottomPad=(srcBottom||numOn)?Math.max(my,footBase(my)+FOOT_SIZE+24):my;
+  const bottomPad=(srcBottom||(numOn&&!after))?Math.max(my,footBase(my)+FOOT_SIZE+24):my;
   const topFor=p=>band&&S.imPos==='top'&&p===0?(S.imBleed?S.imSize+IMG_GAP+Math.min(my,30):my+bandH):my;
   const botFor=p=>band&&S.imPos==='bottom'&&p===0?(S.imBleed?S.imSize+IMG_GAP+Math.min(my,30):bottomPad+bandH):bottomPad;
   const out=[];let cur={items:[],y:0},pi=0;
@@ -558,24 +558,22 @@ function draw(ctx,p,total,scale){
  const f=fontOf(0,FOOT_SIZE),soft=hexA(S.cText,.55);ctx.font=f;
  const wOf=str=>str?advs(str,f).reduce((a,c)=>a+c,0)-ls:0;
  const put=(str,x,y,col)=>{if(!str)return;ctx.fillStyle=col;const a=advs(str,f);[...str].forEach((ch,i)=>{ctx.fillText(ch,x,y);x+=a[i]})};
- // 좌우는 본문 글 영역 끝에 맞춤, 번호는 항상 오른쪽 끝
+ // 좌우는 본문 글 영역 끝에 맞춤
  const ra=p.cx,rb=p.cx+p.cwid;
  const by=H-Math.round(Math.max(30,S.margin*.55));
- let pn=null;
- if(p.numOn){const label=`${p.idx+1} / ${total}`,w=wOf(label);pn={label,w,x:rb-w}}
- if(p.hasSrc){
-  const nm=S.fName.trim(),sr=S.fSrc.trim();
-  const p1=nm&&sr?`${nm}  ${S.fSep}  `:(nm||sr),p2=nm&&sr?sr:'';
-  const w1=wOf(p1)+(p2?ls:0),tw=w1+wOf(p2);
-  let x,y;
-  if(p.afterH>0){
-   y=oy+p.y+FOOT_GAP+FOOT_SIZE*.9;x=S.fAlign==='left'?ra:S.fAlign==='right'?rb-tw:(ra+rb-tw)/2;
-  }else{
-   y=by;x=S.fAlign==='left'?ra:S.fAlign==='right'?rb-tw-(pn?pn.w+18:0):(ra+rb-tw)/2;
-  }
-  put(p1,x,y,S.cText);put(p2,x+w1,y,soft);
+ // 번호는 출처 바로 옆에 한 덩어리로: 왼쪽 정렬이면 [번호 출처], 그 외엔 [출처 번호]
+ const GAP=16,nm=S.fName.trim(),sr=S.fSrc.trim();
+ const p1=nm&&sr?`${nm}  ${S.fSep}  `:(nm||sr),p2=nm&&sr?sr:'';
+ const w1=p.hasSrc?wOf(p1)+(p2?ls:0):0,ws=p.hasSrc?w1+wOf(p2):0;
+ const pl=p.numOn?`${p.idx+1} / ${total}`:'',wp=wOf(pl);
+ const tw=ws+(ws&&wp?GAP:0)+wp;
+ if(tw){
+  const y=p.afterH>0?oy+p.y+FOOT_GAP+FOOT_SIZE*.9:by;
+  let x=S.fAlign==='left'?ra:S.fAlign==='right'?rb-tw:(ra+rb-tw)/2;
+  if(S.fAlign==='left'&&wp){put(pl,x,y,soft);x+=wp+(ws?GAP:0)}
+  if(ws){put(p1,x,y,S.cText);put(p2,x+w1,y,soft);x+=ws+(wp?GAP:0)}
+  if(S.fAlign!=='left'&&wp)put(pl,x,y,soft);
  }
- if(pn)put(pn.label,pn.x,by,soft);
 }
 
 /* ========== 렌더 루프 ========== */
