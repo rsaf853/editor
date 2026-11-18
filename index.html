@@ -105,7 +105,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 .tb button{flex:none;border:0;background:none;width:28px;height:26px;padding:0;font:600 12px/1 var(--sans);letter-spacing:0;display:inline-flex;align-items:center;justify-content:center}
 .tb button:hover{background:var(--fg);color:var(--bg)}
 .tb .dv{flex:none;width:1px;height:14px;background:var(--line);margin:0 5px}
-.tb .pa{flex-direction:column;gap:2px;font-size:12px}.tb .pa i{display:block;width:12px;height:3px}
+.tb .pa span{display:block;font:700 13px/1 var(--sans);padding:0 2px 1px;border-bottom:2px solid}
 .tb .sw{width:13px;height:13px;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
 .tb .sb small{font-size:8px;margin:5px 0 0 1px}
 .hint{margin:5px 0 0;color:var(--mut);font-size:10.5px;line-height:1.65;letter-spacing:-.02em}
@@ -200,7 +200,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
     <button data-w="__" title="밑줄 (Ctrl+U)"><u>U</u></button>
     <button data-w="~~" title="취소선"><s>S</s></button>
     <i class="dv"></i>
-    <button data-w="!!" title="강조색 (Ctrl+K)" class="pa">A<i id="ptSw"></i></button>
+    <button data-w="!!" title="강조색 (Ctrl+K)" class="pa"><span id="ptSw">A</span></button>
     <button data-w="==" title="형광펜 (Ctrl+H)" class="hb"><span class="sw" id="hiSw"></span></button>
     <button data-l="> " title="인용"><svg viewBox="0 0 14 14" width="14" height="14" fill="currentColor" aria-hidden="true"><rect x="1" y="1" width="2" height="12"/><rect x="5" y="3" width="8" height="1.5"/><rect x="5" y="6.25" width="8" height="1.5"/><rect x="5" y="9.5" width="5" height="1.5"/></svg></button>
     <button data-sub title="작은 글씨 &lt;sub&gt;" class="sb">x<small>2</small></button>
@@ -657,7 +657,7 @@ function sync(){
  document.querySelectorAll('#orient button,#vAlign button').forEach(b=>b.disabled=S.ratio==='auto');
  Object.keys(fmt).forEach(k=>{$('#'+k).value=S[k];$('#'+k+'O').textContent=fmt[k](S[k])});
  ['cText','cAccent','cSub','cPoint','bg','hi'].forEach(k=>$('#'+k).value=S[k]);
- $('#ptSw').style.background=S.cPoint;
+ $('#ptSw').style.borderBottomColor=S.cPoint;
  ['imBleed','imLine','fNum'].forEach(k=>$('#'+k).checked=S[k]);
  [['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign'],['hiMode','hiMode']].forEach(([id,k])=>document.querySelectorAll(`#${id} button`).forEach(b=>b.classList.toggle('on',b.dataset.v===S[k])));
  const th=Object.entries(THEMES).find(([,t])=>t.bg===S.bg&&t.cText===S.cText);
