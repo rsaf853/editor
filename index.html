@@ -317,7 +317,9 @@ const THEMES={light:{bg:'#ffffff',cText:'#777777',cAccent:'#000000',cSub:'#aaaaa
 const HI_TEXT='#111111';
 /* 반투명일 때: 흰 바탕에서 같은 색으로 보이도록 진하게 바꿔 50%로 칠함 */
 const hiSoft=h=>{const n=parseInt(h.slice(1),16),f=v=>Math.max(0,2*v-255);return`rgba(${f(n>>16&255)},${f(n>>8&255)},${f(n&255)},.5)`};
-const FOOT_GAP=24,PARA=5, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30, FOOT_SIZE=13, SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
+/* 출처 글자 크기: 본문 크기의 75% (0.5px 단위) */
+const footSize=()=>Math.round(S.size*.75*2)/2;
+const FOOT_GAP=24,PARA=5, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
  ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',
@@ -467,12 +469,12 @@ function build(){
  // 페이지 구간 (coffee 방식: 출처·번호는 바닥에서 40px, 본문은 그만큼 위에서 끊음)
  const hasSrc=!!(S.fName.trim()||S.fSrc.trim());
  const footBase=m=>Math.round(Math.max(30,m*.55));
- const after=hasSrc&&S.fPlace==='after',afterH=after?FOOT_GAP+FOOT_SIZE*1.3:0;
+ const after=hasSrc&&S.fPlace==='after',afterH=after?FOOT_GAP+footSize()*1.3:0;
  const bandH=band?S.imSize+IMG_GAP:0;
  const auto=S.ratio==='auto',r0=RATIO[S.ratio]||1.25,H=auto?0:Math.round(W*(S.orient==='landscape'?1/r0:r0));
  const paginate=numOn=>{
   const srcBottom=hasSrc&&!after;
-  const bottomPad=(srcBottom||(numOn&&!after))?Math.max(my,footBase(my)+FOOT_SIZE+24):my;
+  const bottomPad=(srcBottom||(numOn&&!after))?Math.max(my,footBase(my)+footSize()+24):my;
   const topFor=p=>band&&S.imPos==='top'&&p===0?(S.imBleed?S.imSize+IMG_GAP+Math.min(my,30):my+bandH):my;
   const botFor=p=>band&&S.imPos==='bottom'&&p===0?(S.imBleed?S.imSize+IMG_GAP+Math.min(my,30):bottomPad+bandH):bottomPad;
   const out=[];let cur={items:[],y:0},pi=0;
@@ -562,7 +564,7 @@ function draw(ctx,p,total,scale){
   });
  }
  // ---- 출처(이름 진하게 · 출처 연하게) + 페이지 번호 ----
- const f=fontOf(0,FOOT_SIZE),soft=hexA(S.cText,.55);ctx.font=f;
+ const f=fontOf(0,footSize()),soft=hexA(S.cText,.55);ctx.font=f;
  const wOf=str=>str?advs(str,f).reduce((a,c)=>a+c,0)-ls:0;
  const put=(str,x,y,col)=>{if(!str)return;ctx.fillStyle=col;const a=advs(str,f);[...str].forEach((ch,i)=>{ctx.fillText(ch,x,y);x+=a[i]})};
  // 좌우는 본문 글 영역 끝에 맞춤
@@ -575,7 +577,7 @@ function draw(ctx,p,total,scale){
  const pl=p.numOn?`${p.idx+1} / ${total}`:'',wp=wOf(pl);
  const tw=ws+(ws&&wp?GAP:0)+wp;
  if(tw){
-  const y=p.afterH>0?oy+p.y+FOOT_GAP+FOOT_SIZE*.9:by;
+  const y=p.afterH>0?oy+p.y+FOOT_GAP+footSize()*.9:by;
   let x=S.fAlign==='left'?ra:S.fAlign==='right'?rb-tw:(ra+rb-tw)/2;
   if(S.fAlign==='left'&&wp){put(pl,x,y,soft);x+=wp+(ws?GAP:0)}
   if(ws){put(p1,x,y,S.cText);put(p2,x+w1,y,soft);x+=ws+(wp?GAP:0)}
