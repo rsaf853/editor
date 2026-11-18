@@ -89,6 +89,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 .seg button{flex:1;border:0;background:none;padding:4px 0;display:flex;align-items:center;justify-content:center;min-height:26px;font:600 11px var(--sans);letter-spacing:0}
 .seg button+button{border-left:1px solid var(--fg)}
 .seg button.on{background:var(--fg);color:var(--bg)}
+.seg.sm button{min-height:20px;padding:1px 8px;font-size:10px}
 @media(hover:hover){.seg button:not(.on):hover{background:var(--soft)}}
 
 .cl{display:flex;align-items:center;gap:6px;border:1px solid var(--line);padding:3px 6px 3px 3px;font:600 11px var(--sans);cursor:pointer;min-width:0}
@@ -222,13 +223,13 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
      <label class="cl"><input type="color" id="cSub"><span>보조 * *</span></label>
     </div>
    </div>
-   <div class="f"><span class="lb">형광펜 <span>반투명</span></span>
+   <div class="f"><div class="lb" style="align-items:center">형광펜 <div class="seg sm" id="hiMode"><button data-v="solid">불투명</button><button data-v="soft">반투명</button></div></div>
     <div class="sws" id="hiSws">
-     <button data-c="#FFC1F3" style="background:#FFE0F9" aria-label="분홍"></button>
-     <button data-c="#B7EFFF" style="background:#DBF7FF" aria-label="하늘"></button>
-     <button data-c="#B7FFBF" style="background:#DBFFDF" aria-label="연두"></button>
-     <button data-c="#FFE981" style="background:#FFF4C0" aria-label="노랑"></button>
-     <button data-c="#DBDBDB" style="background:#EDEDED" aria-label="회색"></button>
+     <button data-c="#FFE0F9" style="background:#FFE0F9" aria-label="분홍"></button>
+     <button data-c="#DBF7FF" style="background:#DBF7FF" aria-label="하늘"></button>
+     <button data-c="#DBFFDF" style="background:#DBFFDF" aria-label="연두"></button>
+     <button data-c="#FFF4C0" style="background:#FFF4C0" aria-label="노랑"></button>
+     <button data-c="#EDEDED" style="background:#EDEDED" aria-label="회색"></button>
      <label class="cl"><input type="color" id="hi"><span>직접</span></label>
     </div>
    </div>
@@ -313,10 +314,13 @@ const FONTS={
 const RATIO={'1:1':1,'4:5':1.25,'3:4':4/3,'2:3':1.5,'9:16':16/9};
 const THEMES={light:{bg:'#ffffff',cText:'#777777',cAccent:'#000000',cSub:'#aaaaaa'},dark:{bg:'#111111',cText:'#9a9a9a',cAccent:'#ffffff',cSub:'#5f5f5f'}};
 /* 고정값 */
+const HI_TEXT='#111111';
+/* 반투명일 때: 흰 바탕에서 같은 색으로 보이도록 진하게 바꿔 50%로 칠함 */
+const hiSoft=h=>{const n=parseInt(h.slice(1),16),f=v=>Math.max(0,2*v-255);return`rgba(${f(n>>16&255)},${f(n>>8&255)},${f(n&255)},.5)`};
 const FOOT_GAP=24,PARA=5, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30, FOOT_SIZE=13, SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
- ...THEMES.light,hi:'#FFC1F3',
+ ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',
  ratio:'4:5',orient:'portrait',margin:70,bgTone:0,bgZoom:100,bgOX:0,bgOY:0,
  imPos:'top',imSize:360,imZoom:100,imOX:0,imOY:0,imBleed:false,imLine:false,
  fName:'',fSrc:'',fSep:'|',fAlign:'center',fPlace:'bottom',fNum:true,vAlign:'top'};
@@ -324,8 +328,9 @@ const KEY='rosie_compact_v1';
 let S={...DEF};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}catch(e){}
 delete S.width;
+if(S.hiMode!=='soft')S.hiMode='solid';
 if(!['|','/',''].includes(S.fSep))S.fSep='|';
-{const M={'#ffb3ee':'#FFC1F3','#a8e6ff':'#B7EFFF','#b5f2bc':'#B7FFBF','#fff27a':'#FFE981','#d9d9d9':'#DBDBDB','#ffccf4':'#FFC1F3','#c9f0ff':'#B7EFFF','#cef7d3':'#B7FFBF','#fff7a8':'#FFE981','#e6e6e6':'#DBDBDB','#ffbdf0':'#FFC1F3','#b6eaff':'#B7EFFF','#bff4c5':'#B7FFBF','#fff38c':'#FFE981','#dcdcdc':'#DBDBDB','#ff9be6':'#FFC1F3','#7fd8ff':'#B7EFFF','#8beb9a':'#B7FFBF','#ffec66':'#FFE981','#cfcfcf':'#DBDBDB','#ff6fd8':'#FFC1F3','#45c4ff':'#B7EFFF','#4fe06a':'#B7FFBF','#ffe01a':'#FFE981','#c2c2c2':'#DBDBDB','#f9ff7f':'#FFE981'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
+{const M={'#ffb3ee':'#FFE0F9','#a8e6ff':'#DBF7FF','#b5f2bc':'#DBFFDF','#fff27a':'#FFF4C0','#d9d9d9':'#EDEDED','#ffccf4':'#FFE0F9','#c9f0ff':'#DBF7FF','#cef7d3':'#DBFFDF','#fff7a8':'#FFF4C0','#e6e6e6':'#EDEDED','#ffbdf0':'#FFE0F9','#b6eaff':'#DBF7FF','#bff4c5':'#DBFFDF','#fff38c':'#FFF4C0','#dcdcdc':'#EDEDED','#ff9be6':'#FFE0F9','#7fd8ff':'#DBF7FF','#8beb9a':'#DBFFDF','#ffec66':'#FFF4C0','#cfcfcf':'#EDEDED','#ff6fd8':'#FFE0F9','#45c4ff':'#DBF7FF','#4fe06a':'#DBFFDF','#ffe01a':'#FFF4C0','#c2c2c2':'#EDEDED','#f9ff7f':'#FFF4C0','#ffc1f3':'#FFE0F9','#b7efff':'#DBF7FF','#b7ffbf':'#DBFFDF','#ffe981':'#FFF4C0','#dbdbdb':'#EDEDED'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
 S.bgTone=Math.min(90,Math.abs(+S.bgTone||0));
 if(S.ratio==='4:3'){S.ratio='3:4';S.orient='landscape'}else if(S.ratio==='16:9'){S.ratio='9:16';S.orient='landscape'}else if(!(S.ratio in RATIO)&&S.ratio!=='auto')S.ratio='4:5';
 let bgImg=null,imImg=null,page=0,pages=[],layout=null;
@@ -543,13 +548,13 @@ function draw(ctx,p,total,scale){
   // 형광펜: 이어지는 구간을 한 번에 칠해서 겹침 얼룩 방지
   const pos=[];let px=x;
   l.gs.forEach((g,i)=>{pos.push(px);px+=g.w+ls+(per&&(spaces?g.ch===' ':i<l.gs.length-1)?per:0)});
-  ctx.fillStyle=hexA(S.hi,HI_ALPHA);
+  const solid=S.hiMode!=='soft';ctx.fillStyle=solid?S.hi:hiSoft(S.hi);
   for(let i=0;i<l.gs.length;i++){if(!l.gs[i].h)continue;let j=i;while(j+1<l.gs.length&&l.gs[j+1].h)j++;
    const a=pos[i]-2,b=pos[j]+l.gs[j].w+2,sz=it.sz;ctx.fillRect(a,base-sz*.9,b-a,sz*1.18);i=j}
   l.gs.forEach((g,i)=>{
    if(g.ch===' ')return;
    const col=g.title||g.head?S.cAccent:g.sub||g.a?S.cSub:(g.q&&!g.inDlg)?S.cAccent:S.cText;
-   ctx.font=g.font;ctx.fillStyle=col;ctx.fillText(g.ch,pos[i],base);
+   ctx.font=g.font;ctx.fillStyle=solid&&g.h?HI_TEXT:col;ctx.fillText(g.ch,pos[i],base);
    const ww=g.w+(i<l.gs.length-1?ls+(per&&!spaces?per:0):0);
    if(g.u)ctx.fillRect(pos[i],base+g.sz*.14,ww,Math.max(1,g.sz/18));
    if(g.s)ctx.fillRect(pos[i],base-g.sz*.32,ww,Math.max(1,g.sz/18));
@@ -614,11 +619,11 @@ function sync(){
  Object.keys(fmt).forEach(k=>{$('#'+k).value=S[k];$('#'+k+'O').textContent=fmt[k](S[k])});
  ['cText','cAccent','cSub','bg','hi'].forEach(k=>$('#'+k).value=S[k]);
  ['imBleed','imLine','fNum'].forEach(k=>$('#'+k).checked=S[k]);
- [['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign']].forEach(([id,k])=>document.querySelectorAll(`#${id} button`).forEach(b=>b.classList.toggle('on',b.dataset.v===S[k])));
+ [['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign'],['hiMode','hiMode']].forEach(([id,k])=>document.querySelectorAll(`#${id} button`).forEach(b=>b.classList.toggle('on',b.dataset.v===S[k])));
  const th=Object.entries(THEMES).find(([,t])=>t.bg===S.bg&&t.cText===S.cText);
  document.querySelectorAll('#theme button').forEach(b=>b.classList.toggle('on',!!th&&th[0]===b.dataset.v));
  document.querySelectorAll('#hiSws button').forEach(b=>b.classList.toggle('on',b.dataset.c.toLowerCase()===S.hi.toLowerCase()));
- $('#hiSw').style.background=hexA(S.hi,HI_ALPHA);
+ $('#hiSw').style.background=S.hi;
  $('#bgOpts').classList.toggle('hide',!bgImg);$('#bgPick').classList.toggle('hide',!!bgImg);
  $('#imOpts').classList.toggle('hide',!imImg);$('#imPick').classList.toggle('hide',!!imImg);
 }
@@ -630,7 +635,7 @@ Object.keys(fmt).forEach(k=>$('#'+k).addEventListener('input',e=>{const v=+e.tar
 ['cText','cAccent','cSub','bg'].forEach(k=>$('#'+k).addEventListener('input',e=>{set(k,e.target.value);sync()}));
 $('#hi').addEventListener('input',e=>{set('hi',e.target.value);sync()});
 ['imBleed','imLine','fNum'].forEach(k=>$('#'+k).addEventListener('change',e=>set(k,e.target.checked)));
-[['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign']].forEach(([id,k])=>$('#'+id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+[['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign'],['hiMode','hiMode']].forEach(([id,k])=>$('#'+id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(k==='imPos'&&S.imPos!==b.dataset.v){const isCol=v=>v==='left'||v==='right';if(isCol(b.dataset.v)!==isCol(S.imPos))S.imSize=isCol(b.dataset.v)?280:360}
  set(k,b.dataset.v);sync()}));
 $('#theme').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;Object.assign(S,THEMES[b.dataset.v]);persist();sync();render()});
