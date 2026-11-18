@@ -194,7 +194,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    <textarea id="text" spellcheck="false" placeholder="여기에 붙여넣기"></textarea>
    </div>
    <p class="hint">
-    <code>{이름} 대사</code> <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬(따옴표 자동 제거) · <code>&lt;sub&gt;</code> 자동 변환<br>
+    <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬(따옴표 자동 제거) · <code>&lt;sub&gt;</code> 자동 변환<br>
     <code>*별표*</code> 보조색(별표 숨김) · <code>"대사"</code> 강조색 · <code>==형광펜==</code><br>
     <code>&gt; 인용</code> · <code>## 소제목</code> · <code>- 목록</code> · <code>---</code> 구분선 · <code>===</code> 페이지 나눔
    </p>
@@ -364,7 +364,7 @@ function inline(src){
  }
  return out;
 }
-const DLG=[/^\{([^{}\n]{1,30})\}\s*(.*)$/,/^([^{}|｜\n]{1,30}?)\s*[|｜]\s*(.*)$/,/^([^\s:{}|｜"“][^:{}|｜"“\n]{0,14}?)\s*[:：]\s*(["“].*)$/];
+const DLG=[/^([^{}|｜\n]{1,30}?)\s*[|｜]\s*(.*)$/,/^([^\s:{}|｜"“][^:{}|｜"“\n]{0,14}?)\s*[:：]\s*(["“].*)$/];
 function parse(text){
  const out=[];
  for(let raw of text.replace(/\r\n?/g,'\n').replace(/ /g,' ').split('\n')){
