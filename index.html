@@ -60,8 +60,7 @@ button{cursor:pointer}
 .hd .cp,.hd .pr{font-weight:400;color:var(--mut);opacity:.6;letter-spacing:-.07em}
 
 .sec{margin-bottom:24px}
-.lab{display:flex;justify-content:space-between;align-items:baseline;font:700 10px var(--sans);letter-spacing:.12em;color:var(--mut);padding-bottom:5px;border-bottom:2px solid var(--fg);margin-bottom:10px}
-.lab b{color:var(--fg);font-weight:700}
+.lab{font:700 10px var(--sans);letter-spacing:.12em;color:var(--fg);padding-bottom:5px;border-bottom:2px solid var(--fg);margin-bottom:10px}
 .f{margin-bottom:9px}
 .f>label,.lb{display:flex;justify-content:space-between;font:600 11px var(--sans);letter-spacing:-.01em;color:var(--mut);margin-bottom:3px}
 .f>label output{color:var(--fg);font-variant-numeric:tabular-nums}
@@ -177,7 +176,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 
   <!-- 01 TEXT -->
   <div class="sec a" style="--i:1">
-   <div class="lab"><b>01</b><span>TEXT</span></div>
+   <div class="lab">TEXT</div>
    <div class="f"><textarea id="title" class="ti" rows="1" placeholder="제목 (비워두면 생략)"></textarea></div>
    <div class="ed">
    <div class="tb" id="tb">
@@ -203,7 +202,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 
   <!-- 02 STYLE -->
   <div class="sec a" style="--i:2">
-   <div class="lab"><b>02</b><span>STYLE</span></div>
+   <div class="lab">STYLE</div>
    <div class="r2">
     <div class="f"><label>폰트</label><select id="font"></select></div>
     <div class="f"><label>정렬</label><div class="seg" id="align"><button data-v="left" aria-label="왼쪽 정렬"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="0" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="0" y="10.5" width="7" height="1.5"/></svg></button><button data-v="center" aria-label="가운데 정렬"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="2.5" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="3.5" y="10.5" width="7" height="1.5"/></svg></button><button data-v="justify" aria-label="양끝 정렬"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="0" y="3.5" width="14" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="0" y="10.5" width="8" height="1.5"/></svg></button></div></div>
@@ -237,7 +236,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 
   <!-- 03 CANVAS -->
   <div class="sec a" style="--i:3">
-   <div class="lab"><b>03</b><span>CANVAS</span></div>
+   <div class="lab">CANVAS</div>
    <div class="f"><label>비율</label><div class="seg" id="ratio"><button data-v="1:1">1:1</button><button data-v="4:5">4:5</button><button data-v="3:4">3:4</button><button data-v="auto">자동</button></div></div>
    <div class="r2">
     <div class="f"><label>방향</label><div class="seg" id="orient"><button data-v="portrait"><i class="ori"></i>세로</button><button data-v="landscape"><i class="ori w"></i>가로</button></div></div>
@@ -260,7 +259,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 
   <!-- 04 IMAGE -->
   <div class="sec a" style="--i:4">
-   <div class="lab"><b>04</b><span>IMAGE</span></div>
+   <div class="lab">IMAGE</div>
    <label class="btn dash" id="imPick">+ 본문 이미지<input type="file" id="imFile" accept="image/*" hidden></label>
    <div id="imOpts" class="hide" style="margin-top:12px">
     <div class="f"><label>위치</label><div class="seg" id="imPos"><button data-v="top" aria-label="위" title="위"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><rect x=".75" y=".75" width="12.5" height="12.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity=".4"/><rect x="1.5" y="1.5" width="11" height="5" fill="currentColor"/></svg></button><button data-v="bottom" aria-label="아래" title="아래"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><rect x=".75" y=".75" width="12.5" height="12.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity=".4"/><rect x="1.5" y="7.5" width="11" height="5" fill="currentColor"/></svg></button><button data-v="left" aria-label="왼쪽" title="왼쪽"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><rect x=".75" y=".75" width="12.5" height="12.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity=".4"/><rect x="1.5" y="1.5" width="5" height="11" fill="currentColor"/></svg></button><button data-v="right" aria-label="오른쪽" title="오른쪽"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><rect x=".75" y=".75" width="12.5" height="12.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity=".4"/><rect x="7.5" y="1.5" width="5" height="11" fill="currentColor"/></svg></button></div></div>
@@ -279,7 +278,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 
   <!-- 05 FOOTER -->
   <div class="sec a" style="--i:5">
-   <div class="lab"><b>05</b><span>FOOTER</span></div>
+   <div class="lab">FOOTER</div>
    <div class="r2">
     <div class="f"><label>이름</label><input type="text" id="fName" placeholder="e4e5"></div>
     <div class="f"><label>출처</label><input type="text" id="fSrc" placeholder="@f4exf4"></div>
