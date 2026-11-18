@@ -318,6 +318,8 @@ const HI_TEXT='#111111';
 const hiSoft=h=>{const n=parseInt(h.slice(1),16),f=v=>Math.max(0,2*v-255);return`rgba(${f(n>>16&255)},${f(n>>8&255)},${f(n&255)},.5)`};
 /* 출처 글자 크기: 본문 크기의 75% (0.5px 단위) */
 const footSize=()=>Math.round(S.size*.75*2)/2;
+/* 대사 이름은 본문보다 0.5px 작게 */
+const NAME_DELTA=.5,nameSize=()=>S.size-NAME_DELTA;
 const FOOT_GAP=32,PARA=2, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
@@ -426,7 +428,7 @@ function build(){
  const cwid=Math.max(80,W-2*mx-(col?(S.imBleed?Math.max(0,S.imSize+IMG_GAP-mx):colW):0));
  const cx=col&&S.imPos==='left'?(S.imBleed?S.imSize+IMG_GAP:mx+colW):mx;
  // 대사 이름 칸 폭: 문서 전체에서 가장 긴 이름 기준
- let nameW=0;blocks.forEach(b=>{if(b.k==='dlg'){const w=advs(b.name,fontOf(1,size)).reduce((a,c)=>a+c,0)-S.ls;nameW=Math.max(nameW,w)}});
+ let nameW=0;blocks.forEach(b=>{if(b.k==='dlg'){const w=advs(b.name,fontOf(1,nameSize())).reduce((a,c)=>a+c,0)-S.ls;nameW=Math.max(nameW,w)}});
  const nameCol=nameW?Math.min(Math.ceil(nameW)+NAME_GAP,cwid*.45):0;
 
  const items=[];let prev=null,lastDlg=false;
@@ -541,7 +543,7 @@ function draw(ctx,p,total,scale){
   if(it.k!=='line')continue;
   const l=it.l,base=y+it.h/2+it.sz*.36;
   if(it.quote){ctx.fillStyle=S.cAccent;const top=it.qJoin?y-it.gapUsed:y;ctx.fillRect(ox,top,2,y+it.h-top)}
-  if(it.name){ctx.font=fontOf(1,S.size);ctx.fillStyle=S.cAccent;let nx=ox;const a=advs(it.name,ctx.font);[...it.name].forEach((ch,i)=>{ctx.fillText(ch,nx,base);nx+=a[i]})}
+  if(it.name){const ns=nameSize(),nb=y+it.h/2+ns*.36;/* 줄 가운데 기준은 그대로 */ctx.font=fontOf(1,ns);ctx.fillStyle=S.cAccent;let nx=ox;const a=advs(it.name,ctx.font);[...it.name].forEach((ch,i)=>{ctx.fillText(ch,nx,nb);nx+=a[i]})}
   if(it.mark){ctx.font=fontOf(0,S.size);ctx.fillStyle=S.cText;ctx.fillText(it.mark,ox,base)}
   const avail=it.w-(it.indent||0);
   let x=ox+it.x+(it.indent||0),extra=0,spaces=0;
