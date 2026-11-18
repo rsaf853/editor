@@ -318,7 +318,7 @@ const HI_TEXT='#111111';
 const hiSoft=h=>{const n=parseInt(h.slice(1),16),f=v=>Math.max(0,2*v-255);return`rgba(${f(n>>16&255)},${f(n>>8&255)},${f(n&255)},.5)`};
 /* 출처 글자 크기: 본문 크기의 75% (0.5px 단위) */
 const footSize=()=>Math.round(S.size*.75*2)/2;
-const FOOT_GAP=32,PARA=0, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
+const FOOT_GAP=32,PARA=2, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
  ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',
