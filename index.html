@@ -313,7 +313,7 @@ const FONTS={
 const RATIO={'1:1':1,'4:5':1.25,'3:4':4/3,'2:3':1.5,'9:16':16/9};
 const THEMES={light:{bg:'#ffffff',cText:'#777777',cAccent:'#000000',cSub:'#aaaaaa'},dark:{bg:'#111111',cText:'#9a9a9a',cAccent:'#ffffff',cSub:'#5f5f5f'}};
 /* 고정값 */
-const FOOT_SIDE=50,FOOT_BASE=40,FOOT_RES=40,FOOT_GAP=24,PARA=5, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30, FOOT_SIZE=13, SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
+const FOOT_GAP=24,PARA=5, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30, FOOT_SIZE=13, SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
  ...THEMES.light,hi:'#FFCCF4',
@@ -459,13 +459,13 @@ function build(){
 
  // 페이지 구간 (coffee 방식: 출처·번호는 바닥에서 40px, 본문은 그만큼 위에서 끊음)
  const hasSrc=!!(S.fName.trim()||S.fSrc.trim());
+ const footBase=m=>Math.round(Math.max(30,m*.55));
  const after=hasSrc&&S.fPlace==='after',afterH=after?FOOT_GAP+FOOT_SIZE*1.3:0;
  const bandH=band?S.imSize+IMG_GAP:0;
  const auto=S.ratio==='auto',r0=RATIO[S.ratio]||1.25,H=auto?0:Math.round(W*(S.orient==='landscape'?1/r0:r0));
  const paginate=numOn=>{
   const srcBottom=hasSrc&&!after;
-  const stack=srcBottom&&numOn&&S.fAlign==='center'?FOOT_SIZE*1.8:0;
-  const bottomPad=my+((srcBottom||numOn)?FOOT_RES:0)+stack;
+  const bottomPad=(srcBottom||numOn)?Math.max(my,footBase(my)+FOOT_SIZE+24):my;
   const topFor=p=>band&&S.imPos==='top'&&p===0?(S.imBleed?S.imSize+IMG_GAP+Math.min(my,30):my+bandH):my;
   const botFor=p=>band&&S.imPos==='bottom'&&p===0?(S.imBleed?S.imSize+IMG_GAP+Math.min(my,30):bottomPad+bandH):bottomPad;
   const out=[];let cur={items:[],y:0},pi=0;
@@ -558,24 +558,20 @@ function draw(ctx,p,total,scale){
  const f=fontOf(0,FOOT_SIZE),soft=hexA(S.cText,.55);ctx.font=f;
  const wOf=str=>str?advs(str,f).reduce((a,c)=>a+c,0)-ls:0;
  const put=(str,x,y,col)=>{if(!str)return;ctx.fillStyle=col;const a=advs(str,f);[...str].forEach((ch,i)=>{ctx.fillText(ch,x,y);x+=a[i]})};
- const side=Math.min(FOOT_SIDE,S.margin);
- let ra=side,rb=W-side;
- if(S.imBleed&&p.col){if(S.imPos==='left')ra=S.imSize+IMG_GAP;else rb=W-S.imSize-IMG_GAP}
- const by=H-FOOT_BASE;
+ // 좌우는 본문 글 영역 끝에 맞춤, 번호는 항상 오른쪽 끝
+ const ra=p.cx,rb=p.cx+p.cwid;
+ const by=H-Math.round(Math.max(30,S.margin*.55));
  let pn=null;
- if(p.numOn){const label=`${p.idx+1} / ${total}`,w=wOf(label);pn={label,w,x:S.fAlign==='left'?ra:S.fAlign==='right'?rb-w:(ra+rb-w)/2}}
+ if(p.numOn){const label=`${p.idx+1} / ${total}`,w=wOf(label);pn={label,w,x:rb-w}}
  if(p.hasSrc){
   const nm=S.fName.trim(),sr=S.fSrc.trim();
   const p1=nm&&sr?`${nm}  ${S.fSep}  `:(nm||sr),p2=nm&&sr?sr:'';
   const w1=wOf(p1)+(p2?ls:0),tw=w1+wOf(p2);
   let x,y;
   if(p.afterH>0){
-   const a=p.cx,b=p.cx+p.cwid;y=oy+p.y+FOOT_GAP+FOOT_SIZE*.9;
-   x=S.fAlign==='left'?a:S.fAlign==='right'?b-tw:(a+b-tw)/2;
+   y=oy+p.y+FOOT_GAP+FOOT_SIZE*.9;x=S.fAlign==='left'?ra:S.fAlign==='right'?rb-tw:(ra+rb-tw)/2;
   }else{
-   y=by;x=S.fAlign==='left'?ra:S.fAlign==='right'?rb-tw:(ra+rb-tw)/2;
-   // 번호와 같은 쪽이면: 번호는 가장자리, 출처는 안쪽으로 / 가운데면 출처를 번호 위로
-   if(pn){if(S.fAlign==='left')x=ra+pn.w+18;else if(S.fAlign==='right')x=rb-pn.w-18-tw;else y-=FOOT_SIZE*1.8}
+   y=by;x=S.fAlign==='left'?ra:S.fAlign==='right'?rb-tw-(pn?pn.w+18:0):(ra+rb-tw)/2;
   }
   put(p1,x,y,S.cText);put(p2,x+w1,y,soft);
  }
