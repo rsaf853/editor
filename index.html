@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <title>r♡sieditor</title>
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -27,6 +27,8 @@
 @media(prefers-color-scheme:light){:root{color-scheme:light}}
 *{box-sizing:border-box;border-radius:0}
 html,body{margin:0}
+/* 모바일 확대 막기: 더블탭 확대 끔, 가로 회전 시 글자 커짐 끔 */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 body{background:var(--bg);color:var(--fg);font:400 14px/1.6 var(--sans);letter-spacing:-.03em;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;letter-spacing:inherit;color:inherit}
 /* 드래그(선택) 시 색 반전 */
@@ -714,6 +716,10 @@ const rzEnd=()=>{if(!rzOn)return;rzOn=false;rz.classList.remove('on');document.b
 rz.addEventListener('pointerup',rzEnd);rz.addEventListener('pointercancel',rzEnd);
 window.addEventListener('resize',()=>{const v=parseInt(getComputedStyle(app).getPropertyValue('--pw'));if(v)setPW(v)});
 rz.addEventListener('dblclick',()=>{setPW(PW_DEF);try{localStorage.removeItem(PW_KEY)}catch(e){}});
+
+/* 아이폰 사파리는 user-scalable=no 를 무시하므로 핀치 확대를 직접 막음 */
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 
 sync();render();loadFonts();
 </script>
