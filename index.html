@@ -227,7 +227,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
      <button data-c="#FFC1F3" style="background:#FFE0F9" aria-label="분홍"></button>
      <button data-c="#B7EFFF" style="background:#DBF7FF" aria-label="하늘"></button>
      <button data-c="#B7FFBF" style="background:#DBFFDF" aria-label="연두"></button>
-     <button data-c="#F9FF7F" style="background:#FCFFBF" aria-label="노랑"></button>
+     <button data-c="#FFE981" style="background:#FFF4C0" aria-label="노랑"></button>
      <button data-c="#DBDBDB" style="background:#EDEDED" aria-label="회색"></button>
      <label class="cl"><input type="color" id="hi"><span>직접</span></label>
     </div>
@@ -325,7 +325,7 @@ let S={...DEF};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}catch(e){}
 delete S.width;
 if(!['|','/',''].includes(S.fSep))S.fSep='|';
-{const M={'#ffb3ee':'#FFC1F3','#a8e6ff':'#B7EFFF','#b5f2bc':'#B7FFBF','#fff27a':'#F9FF7F','#d9d9d9':'#DBDBDB','#ffccf4':'#FFC1F3','#c9f0ff':'#B7EFFF','#cef7d3':'#B7FFBF','#fff7a8':'#F9FF7F','#e6e6e6':'#DBDBDB','#ffbdf0':'#FFC1F3','#b6eaff':'#B7EFFF','#bff4c5':'#B7FFBF','#fff38c':'#F9FF7F','#dcdcdc':'#DBDBDB','#ff9be6':'#FFC1F3','#7fd8ff':'#B7EFFF','#8beb9a':'#B7FFBF','#ffec66':'#F9FF7F','#cfcfcf':'#DBDBDB','#ff6fd8':'#FFC1F3','#45c4ff':'#B7EFFF','#4fe06a':'#B7FFBF','#ffe01a':'#F9FF7F','#c2c2c2':'#DBDBDB'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
+{const M={'#ffb3ee':'#FFC1F3','#a8e6ff':'#B7EFFF','#b5f2bc':'#B7FFBF','#fff27a':'#FFE981','#d9d9d9':'#DBDBDB','#ffccf4':'#FFC1F3','#c9f0ff':'#B7EFFF','#cef7d3':'#B7FFBF','#fff7a8':'#FFE981','#e6e6e6':'#DBDBDB','#ffbdf0':'#FFC1F3','#b6eaff':'#B7EFFF','#bff4c5':'#B7FFBF','#fff38c':'#FFE981','#dcdcdc':'#DBDBDB','#ff9be6':'#FFC1F3','#7fd8ff':'#B7EFFF','#8beb9a':'#B7FFBF','#ffec66':'#FFE981','#cfcfcf':'#DBDBDB','#ff6fd8':'#FFC1F3','#45c4ff':'#B7EFFF','#4fe06a':'#B7FFBF','#ffe01a':'#FFE981','#c2c2c2':'#DBDBDB','#f9ff7f':'#FFE981'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
 S.bgTone=Math.min(90,Math.abs(+S.bgTone||0));
 if(S.ratio==='4:3'){S.ratio='3:4';S.orient='landscape'}else if(S.ratio==='16:9'){S.ratio='9:16';S.orient='landscape'}else if(!(S.ratio in RATIO)&&S.ratio!=='auto')S.ratio='4:5';
 let bgImg=null,imImg=null,page=0,pages=[],layout=null;
