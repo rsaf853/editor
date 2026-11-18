@@ -228,7 +228,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
      <button data-c="#FFE0F9" style="background:#FFE0F9" aria-label="분홍"></button>
      <button data-c="#DBF7FF" style="background:#DBF7FF" aria-label="하늘"></button>
      <button data-c="#DBFFDF" style="background:#DBFFDF" aria-label="연두"></button>
-     <button data-c="#FFF4C0" style="background:#FFF4C0" aria-label="노랑"></button>
+     <button data-c="#FFFDC0" style="background:#FFFDC0" aria-label="노랑"></button>
      <button data-c="#EDEDED" style="background:#EDEDED" aria-label="회색"></button>
      <label class="cl"><input type="color" id="hi"><span>직접</span></label>
     </div>
@@ -330,7 +330,7 @@ try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}c
 delete S.width;
 if(S.hiMode!=='soft')S.hiMode='solid';
 if(!['|','/',''].includes(S.fSep))S.fSep='|';
-{const M={'#ffb3ee':'#FFE0F9','#a8e6ff':'#DBF7FF','#b5f2bc':'#DBFFDF','#fff27a':'#FFF4C0','#d9d9d9':'#EDEDED','#ffccf4':'#FFE0F9','#c9f0ff':'#DBF7FF','#cef7d3':'#DBFFDF','#fff7a8':'#FFF4C0','#e6e6e6':'#EDEDED','#ffbdf0':'#FFE0F9','#b6eaff':'#DBF7FF','#bff4c5':'#DBFFDF','#fff38c':'#FFF4C0','#dcdcdc':'#EDEDED','#ff9be6':'#FFE0F9','#7fd8ff':'#DBF7FF','#8beb9a':'#DBFFDF','#ffec66':'#FFF4C0','#cfcfcf':'#EDEDED','#ff6fd8':'#FFE0F9','#45c4ff':'#DBF7FF','#4fe06a':'#DBFFDF','#ffe01a':'#FFF4C0','#c2c2c2':'#EDEDED','#f9ff7f':'#FFF4C0','#ffc1f3':'#FFE0F9','#b7efff':'#DBF7FF','#b7ffbf':'#DBFFDF','#ffe981':'#FFF4C0','#dbdbdb':'#EDEDED'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
+{const M={'#ffb3ee':'#FFE0F9','#a8e6ff':'#DBF7FF','#b5f2bc':'#DBFFDF','#fff27a':'#FFFDC0','#d9d9d9':'#EDEDED','#ffccf4':'#FFE0F9','#c9f0ff':'#DBF7FF','#cef7d3':'#DBFFDF','#fff7a8':'#FFFDC0','#e6e6e6':'#EDEDED','#ffbdf0':'#FFE0F9','#b6eaff':'#DBF7FF','#bff4c5':'#DBFFDF','#fff38c':'#FFFDC0','#dcdcdc':'#EDEDED','#ff9be6':'#FFE0F9','#7fd8ff':'#DBF7FF','#8beb9a':'#DBFFDF','#ffec66':'#FFFDC0','#cfcfcf':'#EDEDED','#ff6fd8':'#FFE0F9','#45c4ff':'#DBF7FF','#4fe06a':'#DBFFDF','#ffe01a':'#FFFDC0','#c2c2c2':'#EDEDED','#f9ff7f':'#FFFDC0','#ffc1f3':'#FFE0F9','#b7efff':'#DBF7FF','#b7ffbf':'#DBFFDF','#ffe981':'#FFFDC0','#dbdbdb':'#EDEDED','#fff4c0':'#FFFDC0'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
 S.bgTone=Math.min(90,Math.abs(+S.bgTone||0));
 if(S.ratio==='4:3'){S.ratio='3:4';S.orient='landscape'}else if(S.ratio==='16:9'){S.ratio='9:16';S.orient='landscape'}else if(!(S.ratio in RATIO)&&S.ratio!=='auto')S.ratio='4:5';
 let bgImg=null,imImg=null,page=0,pages=[],layout=null;
