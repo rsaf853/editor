@@ -320,6 +320,7 @@ const hiSoft=h=>{const n=parseInt(h.slice(1),16),f=v=>Math.max(0,2*v-255);return
 const footSize=()=>Math.round(S.size*.75*2)/2;
 /* 대사 이름은 본문보다 0.5px 작게 */
 const NAME_DELTA=.5,nameSize=()=>S.size-NAME_DELTA;
+const BLANK_RATIO=.5;
 const FOOT_GAP=32,PARA=3, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
@@ -443,7 +444,8 @@ function build(){
  blocks.forEach(b=>{
   const gapB=items.length?PARA:0;
   if(b.k==='page'){items.push({k:'page'});prev=null;lastDlg=false;return}
-  if(b.k==='blank'){items.push({k:'space',h:lh,gap:gapB,blank:1});prev='blank';return}
+  /* 빈 줄: 한 줄만 띄우면 반 줄 높이, 연달아 더 띄우면 그다음부터는 한 줄씩 */
+  if(b.k==='blank'){items.push({k:'space',h:prev==='blank'?lh:lh*BLANK_RATIO,gap:gapB,blank:1});prev='blank';return}
   if(b.k==='hr'){items.push({k:'hr',h:lh,gap:gapB});prev='hr';lastDlg=false;return}
   if(b.k==='sub'&&lastDlg){
    // 대사 바로 밑에 붙임: 사이에 낀 빈 줄 제거
