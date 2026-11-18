@@ -284,7 +284,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
     <div class="f"><label>출처</label><input type="text" id="fSrc" placeholder="@f4exf4"></div>
    </div>
    <div class="r2">
-    <div class="f"><label>구분 기호</label><div class="seg" id="fSep"><button data-v="•">•</button><button data-v="|">|</button><button data-v="/">/</button></div></div>
+    <div class="f"><label>구분 기호</label><div class="seg" id="fSep"><button data-v="|">|</button><button data-v="/">/</button><button data-v="">여백만</button></div></div>
     <div class="f"><label>정렬</label><div class="seg" id="fAlign"><button data-v="left" aria-label="왼쪽"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="0" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="0" y="10.5" width="7" height="1.5"/></svg></button><button data-v="center" aria-label="가운데"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="2.5" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="3.5" y="10.5" width="7" height="1.5"/></svg></button><button data-v="right" aria-label="오른쪽"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="5" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="7" y="10.5" width="7" height="1.5"/></svg></button></div></div>
    </div>
    <div class="f"><label>자리</label><div class="seg" id="fPlace"><button data-v="bottom">페이지 맨 아래</button><button data-v="after">본문 바로 아래</button></div></div>
@@ -319,11 +319,12 @@ const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.
  ...THEMES.light,hi:'#FFCCF4',
  ratio:'4:5',orient:'portrait',margin:70,bgTone:0,bgZoom:100,bgOX:0,bgOY:0,
  imPos:'top',imSize:360,imZoom:100,imOX:0,imOY:0,imBleed:false,imLine:false,
- fName:'',fSrc:'',fSep:'•',fAlign:'center',fPlace:'bottom',fNum:true,vAlign:'top'};
+ fName:'',fSrc:'',fSep:'|',fAlign:'center',fPlace:'bottom',fNum:true,vAlign:'top'};
 const KEY='rosie_compact_v1';
 let S={...DEF};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}catch(e){}
 delete S.width;
+if(!['|','/',''].includes(S.fSep))S.fSep='|';
 {const M={'#ffb3ee':'#FFCCF4','#a8e6ff':'#C9F0FF','#b5f2bc':'#CEF7D3','#fff27a':'#FFF7A8','#d9d9d9':'#E6E6E6'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
 S.bgTone=Math.min(90,Math.abs(+S.bgTone||0));
 if(S.ratio==='4:3'){S.ratio='3:4';S.orient='landscape'}else if(S.ratio==='16:9'){S.ratio='9:16';S.orient='landscape'}else if(!(S.ratio in RATIO)&&S.ratio!=='auto')S.ratio='4:5';
@@ -563,7 +564,7 @@ function draw(ctx,p,total,scale){
  const by=H-Math.round(Math.max(30,S.margin*.55));
  // 번호는 출처 바로 옆에 한 덩어리로: 왼쪽 정렬이면 [번호 출처], 그 외엔 [출처 번호]
  const GAP=16,nm=S.fName.trim(),sr=S.fSrc.trim();
- const p1=nm&&sr?`${nm}  ${S.fSep}  `:(nm||sr),p2=nm&&sr?sr:'';
+ const p1=nm&&sr?(S.fSep?`${nm}  ${S.fSep}  `:`${nm}    `):(nm||sr),p2=nm&&sr?sr:'';
  const w1=p.hasSrc?wOf(p1)+(p2?ls:0):0,ws=p.hasSrc?w1+wOf(p2):0;
  const pl=p.numOn?`${p.idx+1} / ${total}`:'',wp=wOf(pl);
  const tw=ws+(ws&&wp?GAP:0)+wp;
