@@ -12,8 +12,6 @@
 /* ---- 캔버스용 폰트 ---- */
 @font-face{font-family:'KoPubWorld Batang';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Medium.woff2') format('woff2')}
 @font-face{font-family:'KoPubWorld Batang';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Batang-Bold.woff2') format('woff2')}
-@font-face{font-family:'KoPubWorld Dotum';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Dotum-Medium.woff2') format('woff2')}
-@font-face{font-family:'KoPubWorld Dotum';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Dotum-Bold.woff2') format('woff2')}
 @font-face{font-family:'BusanDandiGothic';font-weight:400;font-display:swap;src:url('fonts/BusanDandiGothic-M.woff2') format('woff2')}
 @font-face{font-family:'BusanDandiGothic';font-weight:700;font-display:swap;src:url('fonts/BusanDandiGothic-B.woff2') format('woff2')}
 @font-face{font-family:'BusanDandiMyeongjo';font-weight:400;font-display:swap;src:url('fonts/BusanDandiMyeongjo-M.woff2') format('woff2')}
@@ -114,7 +112,11 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 .sws{display:flex;gap:6px;align-items:center}
 .sws button{width:22px;height:22px;border:1px solid var(--line);padding:0}
 .sws button.on{outline:2px solid var(--fg);outline-offset:1px}
-.sws label{margin-left:auto}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hrow .seg{flex:none}.hrow .seg button{white-space:nowrap;padding:3px 9px}
+.cust{position:relative;width:22px;height:22px;border:1px dashed var(--fg);display:grid;place-items:center;font:600 13px/1 var(--sans);cursor:pointer;flex:none}
+.cust input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.cust.on{border-style:solid;outline:2px solid var(--fg);outline-offset:1px}.cust.on span{display:none}
 
 .chk{display:flex;align-items:center;gap:8px;font:600 12px var(--sans);cursor:pointer;user-select:none}
 .chk input{appearance:none;-webkit-appearance:none;width:14px;height:14px;border:1px solid var(--fg);margin:0;display:grid;place-items:center;cursor:pointer}
@@ -227,14 +229,17 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
      <label class="cl"><input type="color" id="cSub"><span>보조 * *</span></label>
     </div>
    </div>
-   <div class="f"><div class="lb" style="align-items:center">형광펜 <div class="seg sm" id="hiMode"><button data-v="solid">불투명</button><button data-v="soft">반투명</button></div></div>
-    <div class="sws" id="hiSws">
-     <button data-c="#FFE0F9" style="background:#FFE0F9" aria-label="분홍"></button>
-     <button data-c="#DBF7FF" style="background:#DBF7FF" aria-label="하늘"></button>
-     <button data-c="#DBFFDF" style="background:#DBFFDF" aria-label="연두"></button>
-     <button data-c="#FFFDC0" style="background:#FFFDC0" aria-label="노랑"></button>
-     <button data-c="#EDEDED" style="background:#EDEDED" aria-label="회색"></button>
-     <label class="cl"><input type="color" id="hi"><span>직접</span></label>
+   <div class="f"><span class="lb">형광펜</span>
+    <div class="hrow">
+     <div class="sws" id="hiSws">
+      <button data-c="#FFE0F9" style="background:#FFE0F9" aria-label="분홍"></button>
+      <button data-c="#DBF7FF" style="background:#DBF7FF" aria-label="하늘"></button>
+      <button data-c="#DBFFDF" style="background:#DBFFDF" aria-label="연두"></button>
+      <button data-c="#FFFDC0" style="background:#FFFDC0" aria-label="노랑"></button>
+      <button data-c="#EDEDED" style="background:#EDEDED" aria-label="회색"></button>
+      <label class="cust" id="hiCust" title="직접 선택"><input type="color" id="hi" aria-label="형광펜 색 직접 선택"><span>+</span></label>
+     </div>
+     <div class="seg sm" id="hiMode"><button data-v="solid">불투명</button><button data-v="soft">반투명</button></div>
     </div>
    </div>
   </div>
@@ -310,10 +315,9 @@ const SANS_FB="'Pretendard JP Variable','Noto Sans KR',sans-serif",SERIF_FB="'No
 const FONTS={
  pretendard:{n:'프리텐다드',css:"'Pretendard JP Variable',"+SANS_FB},
  bookkgothic:{n:'부크크 고딕',css:"'BookkGothic',"+SANS_FB},
- kopubdotum:{n:'KoPub 돋움',css:"'KoPubWorld Dotum',"+SANS_FB},
- kopub:{n:'KoPub 바탕',css:"'KoPubWorld Batang',"+SERIF_FB},
  dandigothic:{n:'부산단디 고딕',css:"'BusanDandiGothic',"+SANS_FB},
  dandimyeongjo:{n:'부산단디 명조',css:"'BusanDandiMyeongjo',"+SERIF_FB},
+ kopub:{n:'KoPub 바탕',css:"'KoPubWorld Batang',"+SERIF_FB},
  yeolrin:{n:'열린명조',css:"'Yeolrin Myeongjo',"+SERIF_FB},
  paperlogy:{n:'페이퍼로지',css:"'Paperlogy',"+SANS_FB}
 };
@@ -640,7 +644,9 @@ function sync(){
  [['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign'],['hiMode','hiMode']].forEach(([id,k])=>document.querySelectorAll(`#${id} button`).forEach(b=>b.classList.toggle('on',b.dataset.v===S[k])));
  const th=Object.entries(THEMES).find(([,t])=>t.bg===S.bg&&t.cText===S.cText);
  document.querySelectorAll('#theme button').forEach(b=>b.classList.toggle('on',!!th&&th[0]===b.dataset.v));
- document.querySelectorAll('#hiSws button').forEach(b=>b.classList.toggle('on',b.dataset.c.toLowerCase()===S.hi.toLowerCase()));
+ let hiPreset=false;document.querySelectorAll('#hiSws button').forEach(b=>{const on=b.dataset.c.toLowerCase()===S.hi.toLowerCase();b.classList.toggle('on',on);if(on)hiPreset=true});
+ /* 직접 고른 색이면 + 칸이 그 색으로 채워짐 */
+ $('#hiCust').classList.toggle('on',!hiPreset);$('#hiCust').style.background=hiPreset?'':S.hi;
  $('#hiSw').style.background=S.hi;
  $('#bgOpts').classList.toggle('hide',!bgImg);$('#bgPick').classList.toggle('hide',!!bgImg);
  $('#imOpts').classList.toggle('hide',!imImg);$('#imPick').classList.toggle('hide',!!imImg);
