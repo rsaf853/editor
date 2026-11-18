@@ -139,6 +139,13 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 .dlg .tt{display:flex;justify-content:space-between;padding:8px 12px;background:var(--fg);color:var(--bg);font:700 10px var(--sans);letter-spacing:.12em}
 .dlg .ms{margin:0;padding:18px 14px 20px;font-size:13px;line-height:1.6;letter-spacing:-.03em;word-break:keep-all}
 .dlg .ms small{display:block;margin-top:4px;color:var(--mut);font-size:11.5px}
+.dlg .di{padding:0 14px 16px;margin-top:-6px}.dlg .di input{width:100%}
+/* 프리셋 목록 */
+.pl{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.pl:empty{display:none}
+.pc{display:flex;border:1px solid var(--fg)}
+.pc button{border:0;background:none;padding:5px 9px;font:600 11px var(--sans);letter-spacing:-.01em}
+.pc button+button{border-left:1px solid var(--fg);padding:5px 7px;color:var(--mut)}
+@media(hover:hover){.pc button:hover{background:var(--fg);color:var(--bg)}}
 .dlg .bt{display:flex;border-top:1px solid var(--fg)}
 .dlg .bt button{flex:1;border:0;background:none;padding:10px;font:700 10px var(--sans);letter-spacing:.1em}
 .dlg .bt button+button{border-left:1px solid var(--fg);background:var(--fg);color:var(--bg)}
@@ -301,11 +308,16 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    <label class="chk"><input type="checkbox" id="fNum">페이지 번호 (2장 이상일 때)</label>
   </div>
 
-  <div class="sec a" style="--i:6;margin:0"><button class="btn" id="reset">설정 초기화</button></div>
+  <div class="sec a" style="--i:6">
+   <div class="lab">preset</div>
+   <div class="pl" id="pl"></div>
+   <button class="btn dash" id="pSave">+ SAVE PRESET</button>
+  </div>
+  <div class="sec a" style="--i:7;margin:0"><button class="btn" id="reset">RESET</button></div>
  </aside>
 </div>
 <div class="toast" id="toast"></div>
-<div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT"><div class="bx"><div class="tt"><span id="dlgT">RESET</span><span>r♡</span></div><p class="ms" id="dlgM"></p><div class="bt"><button id="dlgN">CANCEL</button><button id="dlgY">OK</button></div></div></div>
+<div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT"><div class="bx"><div class="tt"><span id="dlgT">RESET</span><span>r♡</span></div><p class="ms" id="dlgM"></p><div class="di" id="dlgIW" hidden><input type="text" id="dlgI" maxlength="20" placeholder="프리셋 이름" autocomplete="off"></div><div class="bt"><button id="dlgN">CANCEL</button><button id="dlgY">OK</button></div></div></div>
 
 <script>
 'use strict';
@@ -666,11 +678,27 @@ $('#theme').addEventListener('click',e=>{const b=e.target.closest('button');if(!
 $('#hiSws').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;set('hi',b.dataset.c);sync()});
 
 /* 기본 confirm 대신 사이트 톤 확인 창 */
-function ask(title,msg,ok){return new Promise(res=>{const d=$('#dlg'),y=$('#dlgY'),n=$('#dlgN'),last=document.activeElement;
- $('#dlgT').textContent=title;$('#dlgM').innerHTML=msg;y.textContent=ok||'OK';d.classList.add('on');y.focus();
- const done=v=>{d.classList.remove('on');y.onclick=n.onclick=d.onclick=null;document.removeEventListener('keydown',key);last&&last.focus&&last.focus();res(v)};
+function ask(title,msg,ok,input){return new Promise(res=>{const d=$('#dlg'),y=$('#dlgY'),n=$('#dlgN'),iw=$('#dlgIW'),ip=$('#dlgI'),last=document.activeElement;
+ $('#dlgT').textContent=title;$('#dlgM').innerHTML=msg;y.textContent=ok||'OK';iw.hidden=input==null;ip.value=input||'';d.classList.add('on');(input==null?y:ip).focus();
+ ip.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();y.click()}};
+ const done=v=>{if(v&&input!=null)v=ip.value.trim()||false;d.classList.remove('on');y.onclick=n.onclick=d.onclick=null;document.removeEventListener('keydown',key);last&&last.focus&&last.focus();res(v)};
  const key=e=>{if(e.key==='Escape'){e.preventDefault();done(false)}};
  y.onclick=()=>done(true);n.onclick=()=>done(false);d.onclick=e=>{if(e.target===d)done(false)};document.addEventListener('keydown',key)})}
+/* ---- 프리셋: 스타일 + 출처 글자 (글·제목·이미지·위치는 제외) ---- */
+const P_KEY='rosie_compact_presets',P_SKIP=['title','text','bgOX','bgOY','imOX','imOY'];
+const pGet=()=>{try{return JSON.parse(localStorage.getItem(P_KEY)||'[]')}catch(e){return[]}};
+const pPut=a=>{try{localStorage.setItem(P_KEY,JSON.stringify(a));return true}catch(e){toast('저장하지 못했어요');return false}};
+const escH=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function pDraw(){$('#pl').innerHTML=pGet().map((p,i)=>`<div class="pc"><button data-i="${i}" title="불러오기">${escH(p.name)}</button><button data-x="${i}" aria-label="삭제">×</button></div>`).join('')}
+$('#pSave').addEventListener('click',async()=>{
+ const name=await ask('SAVE PRESET','지금 스타일과 출처를 프리셋으로 저장할까요?<small>글, 제목, 이미지는 저장되지 않아요.</small>','SAVE','');if(!name)return;
+ const st={};Object.keys(DEF).forEach(k=>{if(!P_SKIP.includes(k))st[k]=S[k]});
+ const a=pGet(),i=a.findIndex(p=>p.name===name);if(i>=0)a[i].s=st;else a.push({name,s:st});
+ if(pPut(a)){pDraw();toast('SAVED')}});
+$('#pl').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const a=pGet();
+ if(b.dataset.x!=null){const p=a[+b.dataset.x];if(!p||!await ask('DELETE',`"${escH(p.name)}" 프리셋을 지울까요?`,'DELETE'))return;a.splice(+b.dataset.x,1);if(pPut(a)){pDraw();toast('DELETED')}return}
+ const p=a[+b.dataset.i];if(!p)return;S={...S,...p.s};persist();sync();clearMeasure();loadFonts();render();toast('LOADED')});
+pDraw();
 $('#reset').addEventListener('click',async()=>{if(!await ask('RESET','설정을 처음 상태로 돌릴까요?<small>글, 제목, 이름·출처는 그대로 남아요.</small>','RESET'))return;toast('RESET');S={...DEF,title:S.title,text:S.text,fName:S.fName,fSrc:S.fSrc};persist();sync();clearMeasure();loadFonts();render()});
 
 /* ---- 이미지 ---- */
