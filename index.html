@@ -351,7 +351,7 @@ const isDark=h=>{const n=parseInt(String(h).slice(1),16);return((n>>16&255)*.299
 const FOOT_GAP=32,PARA=3, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
- ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',cPoint:'#E0608A',
+ ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',cPoint:'#3A6FE0',
  ratio:'4:5',orient:'portrait',margin:70,bgTone:0,bgZoom:100,bgOX:0,bgOY:0,
  imPos:'top',imSize:360,imZoom:100,imOX:0,imOY:0,imBleed:false,imLine:false,
  fName:'',fSrc:'',fSep:'|',fAlign:'center',fPlace:'bottom',fNum:true,vAlign:'top'};
@@ -359,6 +359,7 @@ const KEY='rosie_compact_v1';
 let S={...DEF};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}catch(e){}
 delete S.width;
+if(String(S.cPoint).toLowerCase()==='#e0608a')S.cPoint='#3A6FE0';
 if(S.font==='nexon')S.font='bookkgothic';
 if(!(S.font in FONTS))S.font='pretendard';
 if(['#111111','#080808'].includes(String(S.bg).toLowerCase()))S.bg='#070707';
