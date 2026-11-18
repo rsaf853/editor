@@ -16,8 +16,8 @@
 @font-face{font-family:'KoPubWorld Dotum';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/npm/font-kopubworld@1.0/fonts/KoPubWorld-Dotum-Bold.woff2') format('woff2')}
 @font-face{font-family:'Yeolrin Myeongjo';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/hyunbinseo/yeolrin@1/YeolrinMyeongjo-Medium.woff2') format('woff2')}
 @font-face{font-family:'Yeolrin Myeongjo';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/hyunbinseo/yeolrin@1/YeolrinMyeongjo-Bold.woff2') format('woff2')}
-@font-face{font-family:'NexonLv1Gothic';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON Lv1 Gothic OTF.woff') format('woff')}
-@font-face{font-family:'NexonLv1Gothic';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON Lv1 Gothic OTF Bold.woff') format('woff')}
+@font-face{font-family:'BookkGothic';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2302@1.0/BookkGothic-Lt.woff2') format('woff2')}
+@font-face{font-family:'BookkGothic';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2302@1.0/BookkGothic-Bd.woff2') format('woff2')}
 @font-face{font-family:'Paperlogy';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2') format('woff2')}
 @font-face{font-family:'Paperlogy';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2') format('woff2')}
 
@@ -308,7 +308,7 @@ const FONTS={
  kopubdotum:{n:'KoPub 돋움',css:"'KoPubWorld Dotum',"+SANS_FB},
  kopub:{n:'KoPub 바탕',css:"'KoPubWorld Batang',"+SERIF_FB},
  yeolrin:{n:'열린명조',css:"'Yeolrin Myeongjo',"+SERIF_FB},
- nexon:{n:'넥슨 Lv.1 고딕',css:"'NexonLv1Gothic',"+SANS_FB},
+ bookkgothic:{n:'부크크 고딕',css:"'BookkGothic',"+SANS_FB},
  paperlogy:{n:'페이퍼로지',css:"'Paperlogy',"+SANS_FB}
 };
 const RATIO={'1:1':1,'4:5':1.25,'3:4':4/3};
@@ -333,6 +333,8 @@ const KEY='rosie_compact_v1';
 let S={...DEF};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}catch(e){}
 delete S.width;
+if(S.font==='nexon')S.font='bookkgothic';
+if(!(S.font in FONTS))S.font='pretendard';
 if(['#111111','#080808'].includes(String(S.bg).toLowerCase()))S.bg='#070707';
 if(S.hiMode!=='soft')S.hiMode='solid';
 if(!['|','/',''].includes(S.fSep))S.fSep='|';
