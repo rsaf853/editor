@@ -320,6 +320,7 @@ const footSize=()=>Math.round(S.size*.75*2)/2;
 /* 대사 이름은 본문보다 0.5px 작게 */
 const NAME_DELTA=.5,nameSize=()=>S.size-NAME_DELTA;
 const BLANK_RATIO=.35;
+const isDark=h=>{const n=parseInt(String(h).slice(1),16);return((n>>16&255)*.299+(n>>8&255)*.587+(n&255)*.114)<128};
 const FOOT_GAP=32,PARA=3, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
@@ -555,12 +556,14 @@ function draw(ctx,p,total,scale){
   const pos=[];let px=x;
   l.gs.forEach((g,i)=>{pos.push(px);px+=g.w+ls+(per&&(spaces?g.ch===' ':i<l.gs.length-1)?per:0)});
   const solid=S.hiMode!=='soft';ctx.fillStyle=solid?S.hi:hiSoft(S.hi);
+  /* 불투명 형광펜 글자: 밝은 배경이면 강조색, 어두운 배경이면 배경색(반전 느낌) */
+  const hiTextCol=isDark(S.bg)?S.bg:S.cAccent;
   for(let i=0;i<l.gs.length;i++){if(!l.gs[i].h)continue;let j=i;while(j+1<l.gs.length&&l.gs[j+1].h)j++;
    const a=pos[i]-2,b=pos[j]+l.gs[j].w+2,sz=it.sz;ctx.fillRect(a,base-sz*.9,b-a,sz*1.18);i=j}
   l.gs.forEach((g,i)=>{
    if(g.ch===' ')return;
    const col=g.title||g.head?S.cAccent:g.sub||g.a?S.cSub:(g.q&&!g.inDlg)?S.cAccent:S.cText;
-   ctx.font=g.font;ctx.fillStyle=solid&&g.h?S.cAccent:col;ctx.fillText(g.ch,pos[i],base);
+   ctx.font=g.font;ctx.fillStyle=solid&&g.h?hiTextCol:col;ctx.fillText(g.ch,pos[i],base);
    const ww=g.w+(i<l.gs.length-1?ls+(per&&!spaces?per:0):0);
    if(g.u)ctx.fillRect(pos[i],base+g.sz*.14,ww,Math.max(1,g.sz/18));
    if(g.s)ctx.fillRect(pos[i],base-g.sz*.32,ww,Math.max(1,g.sz/18));
