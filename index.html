@@ -111,12 +111,12 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 
 .sws{display:flex;gap:6px;align-items:center}
 .sws button{width:22px;height:22px;border:1px solid var(--line);padding:0}
-.sws button.on{outline:2px solid var(--fg);outline-offset:1px}
+.sws button.on{border-color:var(--fg)}
 .hrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .hrow .seg{flex:none}.hrow .seg button{white-space:nowrap;padding:3px 9px}
 .cust{position:relative;width:22px;height:22px;border:1px dashed var(--fg);display:grid;place-items:center;font:600 13px/1 var(--sans);cursor:pointer;flex:none}
 .cust input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
-.cust.on{border-style:solid;outline:2px solid var(--fg);outline-offset:1px}.cust.on span{display:none}
+.cust.on{border-style:solid}.cust.on span{display:none}
 
 .chk{display:flex;align-items:center;gap:8px;font:600 12px var(--sans);cursor:pointer;user-select:none}
 .chk input{appearance:none;-webkit-appearance:none;width:14px;height:14px;border:1px solid var(--fg);margin:0;display:grid;place-items:center;cursor:pointer}
