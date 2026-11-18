@@ -69,6 +69,7 @@ button{cursor:pointer}
 .ori{display:inline-block;width:8px;height:11px;border:1.5px solid currentColor;margin-right:6px}.ori.w{width:12px;height:8px}
 .seg button:disabled{opacity:.3;cursor:default}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cg{gap:6px}
 .r3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 
 input[type=text],select,textarea{width:100%;border:1px solid var(--line);background:var(--bg);padding:6px 9px;outline:0;font-size:13px}
@@ -104,6 +105,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 .tb button{flex:none;border:0;background:none;width:28px;height:26px;padding:0;font:600 12px/1 var(--sans);letter-spacing:0;display:inline-flex;align-items:center;justify-content:center}
 .tb button:hover{background:var(--fg);color:var(--bg)}
 .tb .dv{flex:none;width:1px;height:14px;background:var(--line);margin:0 5px}
+.tb .pa{flex-direction:column;gap:2px;font-size:12px}.tb .pa i{display:block;width:12px;height:3px}
 .tb .sw{width:13px;height:13px;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
 .tb .sb small{font-size:8px;margin:5px 0 0 1px}
 .hint{margin:5px 0 0;color:var(--mut);font-size:10.5px;line-height:1.65;letter-spacing:-.02em}
@@ -198,6 +200,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
     <button data-w="__" title="밑줄 (Ctrl+U)"><u>U</u></button>
     <button data-w="~~" title="취소선"><s>S</s></button>
     <i class="dv"></i>
+    <button data-w="!!" title="강조색 (Ctrl+K)" class="pa">A<i id="ptSw"></i></button>
     <button data-w="==" title="형광펜 (Ctrl+H)" class="hb"><span class="sw" id="hiSw"></span></button>
     <button data-l="> " title="인용"><svg viewBox="0 0 14 14" width="14" height="14" fill="currentColor" aria-hidden="true"><rect x="1" y="1" width="2" height="12"/><rect x="5" y="3" width="8" height="1.5"/><rect x="5" y="6.25" width="8" height="1.5"/><rect x="5" y="9.5" width="5" height="1.5"/></svg></button>
     <button data-sub title="작은 글씨 &lt;sub&gt;" class="sb">x<small>2</small></button>
@@ -209,7 +212,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    </div>
    <p class="hint">
     <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬(따옴표 자동 제거) · <code>&lt;sub&gt;</code> 자동 변환<br>
-    <code>*별표*</code> 보조색(별표 숨김) · <code>"대사"</code> 강조색 · <code>==형광펜==</code><br>
+    <code>*별표*</code> 보조색(별표 숨김) · <code>"대사"</code> 대사색 · <code>==형광펜==</code> · <code>!!강조!!</code><br>
     <code>&gt; 인용</code> · <code>## 소제목</code> · <code>- 목록</code> · <code>---</code> 구분선 · <code>===</code> 페이지 나눔
    </p>
   </div>
@@ -230,10 +233,11 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
     <div class="f"><label>들여쓰기 <output id="indentO"></output></label><input type="range" id="indent" min="0" max="60" step="5"></div>
    </div>
    <div class="f"><span class="lb">색상</span>
-    <div class="r3">
+    <div class="r2 cg">
      <label class="cl"><input type="color" id="cText"><span>본문</span></label>
-     <label class="cl"><input type="color" id="cAccent"><span>강조 " "</span></label>
+     <label class="cl"><input type="color" id="cAccent"><span>대사 " "</span></label>
      <label class="cl"><input type="color" id="cSub"><span>보조 * *</span></label>
+     <label class="cl"><input type="color" id="cPoint"><span>강조 !!</span></label>
     </div>
    </div>
    <div class="f"><span class="lb">형광펜</span>
@@ -347,7 +351,7 @@ const isDark=h=>{const n=parseInt(String(h).slice(1),16);return((n>>16&255)*.299
 const FOOT_GAP=32,PARA=3, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
- ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',
+ ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',cPoint:'#E0608A',
  ratio:'4:5',orient:'portrait',margin:70,bgTone:0,bgZoom:100,bgOX:0,bgOY:0,
  imPos:'top',imSize:360,imZoom:100,imOX:0,imOY:0,imBleed:false,imLine:false,
  fName:'',fSrc:'',fSep:'|',fAlign:'center',fPlace:'bottom',fNum:true,vAlign:'top'};
@@ -368,21 +372,21 @@ let bgImg=null,imImg=null,page=0,pages=[],layout=null;
 
 /* ========== 파싱 ========== */
 /* 인라인 표기 → 글자 단위 스타일 */
-const MK=/\*\*|~~|__|==|<sub>|<\/sub>|\*|"|“|”/gi;
+const MK=/!!|\*\*|~~|__|==|<sub>|<\/sub>|\*|"|“|”/gi;
 function inline(src){
  const parts=[];let last=0,m;MK.lastIndex=0;
  while((m=MK.exec(src))){if(m.index>last)parts.push({t:src.slice(last,m.index)});parts.push({m:m[0].toLowerCase(),t:m[0]});last=MK.lastIndex}
  if(last<src.length)parts.push({t:src.slice(last)});
  // 짝이 없는 기호는 글자 그대로
- const tog=['**','~~','__','==','*','"'];
+ const tog=['!!','**','~~','__','==','*','"'];
  tog.forEach(k=>{const idx=parts.map((p,i)=>p.m===k?i:-1).filter(i=>i>=0);if(idx.length%2)delete parts[idx[idx.length-1]].m});
  [['“','”'],['<sub>','</sub>']].forEach(([o,c])=>{const st=[];parts.forEach((p,i)=>{if(p.m===o)st.push(i);else if(p.m===c){if(st.length){p.pair=true;parts[st.pop()].pair=true}else delete p.m}});st.forEach(i=>delete parts[i].m)});
- const f={b:0,s:0,u:0,h:0,a:0,q:0,sub:0},out=[];
- const push=(t,o)=>{for(const ch of t)out.push({ch,b:f.b,s:f.s,u:f.u,h:f.h,a:f.a,q:f.q,sub:f.sub,...o})};
+ const f={b:0,s:0,u:0,h:0,a:0,q:0,sub:0,pt:0},out=[];
+ const push=(t,o)=>{for(const ch of t)out.push({ch,b:f.b,s:f.s,u:f.u,h:f.h,a:f.a,q:f.q,sub:f.sub,pt:f.pt,...o})};
  for(const p of parts){
   if(!p.m){push(p.t);continue}
   switch(p.m){
-   case '**':f.b^=1;break;case '~~':f.s^=1;break;case '__':f.u^=1;break;case '==':f.h^=1;break;
+   case '!!':f.pt^=1;break;case '**':f.b^=1;break;case '~~':f.s^=1;break;case '__':f.u^=1;break;case '==':f.h^=1;break;
    case '*':f.a^=1;break; /* 별표 기호는 표시 안 함 */
    case '<sub>':f.sub=1;break;case '</sub>':f.sub=0;break;
    case '"':if(!f.q){f.q=1;push(p.t,{qm:1})}else{push(p.t,{qm:1});f.q=0}break;
@@ -581,13 +585,13 @@ function draw(ctx,p,total,scale){
   const pos=[];let px=x;
   l.gs.forEach((g,i)=>{pos.push(px);px+=g.w+ls+(per&&(spaces?g.ch===' ':i<l.gs.length-1)?per:0)});
   const solid=S.hiMode!=='soft';ctx.fillStyle=solid?S.hi:hiSoft(S.hi);
-  /* 불투명 형광펜 글자: 밝은 배경이면 강조색, 어두운 배경이면 배경색(반전 느낌) */
+  /* 불투명 형광펜 글자: 밝은 배경이면 대사색, 어두운 배경이면 배경색(반전 느낌) */
   const hiTextCol=isDark(S.bg)?S.bg:S.cAccent;
   for(let i=0;i<l.gs.length;i++){if(!l.gs[i].h)continue;let j=i;while(j+1<l.gs.length&&l.gs[j+1].h)j++;
    const a=pos[i]-2,b=pos[j]+l.gs[j].w+2,sz=it.sz;ctx.fillRect(a,base-sz*.9,b-a,sz*1.18);i=j}
   l.gs.forEach((g,i)=>{
    if(g.ch===' ')return;
-   const col=g.title||g.head?S.cAccent:g.sub||g.a?S.cSub:(g.q&&!g.inDlg)?S.cAccent:S.cText;
+   const col=g.pt?S.cPoint:g.title||g.head?S.cAccent:g.sub||g.a?S.cSub:(g.q&&!g.inDlg)?S.cAccent:S.cText;
    ctx.font=g.font;ctx.fillStyle=solid&&g.h?hiTextCol:col;ctx.fillText(g.ch,pos[i],base);
    const ww=g.w+(i<l.gs.length-1?ls+(per&&!spaces?per:0):0);
    if(g.u)ctx.fillRect(pos[i],base+g.sz*.14,ww,Math.max(1,g.sz/18));
@@ -651,7 +655,8 @@ function sync(){
  document.querySelectorAll('#ratio button').forEach(b=>{const v=b.dataset.v;b.textContent=v==='auto'?'자동':S.orient==='landscape'?v.split(':').reverse().join(':'):v});
  document.querySelectorAll('#orient button,#vAlign button').forEach(b=>b.disabled=S.ratio==='auto');
  Object.keys(fmt).forEach(k=>{$('#'+k).value=S[k];$('#'+k+'O').textContent=fmt[k](S[k])});
- ['cText','cAccent','cSub','bg','hi'].forEach(k=>$('#'+k).value=S[k]);
+ ['cText','cAccent','cSub','cPoint','bg','hi'].forEach(k=>$('#'+k).value=S[k]);
+ $('#ptSw').style.background=S.cPoint;
  ['imBleed','imLine','fNum'].forEach(k=>$('#'+k).checked=S[k]);
  [['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign'],['hiMode','hiMode']].forEach(([id,k])=>document.querySelectorAll(`#${id} button`).forEach(b=>b.classList.toggle('on',b.dataset.v===S[k])));
  const th=Object.entries(THEMES).find(([,t])=>t.bg===S.bg&&t.cText===S.cText);
@@ -668,7 +673,7 @@ let lfT=0;function loadFontsSoon(){clearTimeout(lfT);lfT=setTimeout(loadFonts,50
 fontSel.addEventListener('change',e=>set('font',e.target.value));
 
 Object.keys(fmt).forEach(k=>$('#'+k).addEventListener('input',e=>{const v=+e.target.value;$('#'+k+'O').textContent=fmt[k](v);set(k,v)}));
-['cText','cAccent','cSub','bg'].forEach(k=>$('#'+k).addEventListener('input',e=>{set(k,e.target.value);sync()}));
+['cText','cAccent','cSub','cPoint','bg'].forEach(k=>$('#'+k).addEventListener('input',e=>{set(k,e.target.value);sync()}));
 $('#hi').addEventListener('input',e=>{set('hi',e.target.value);sync()});
 ['imBleed','imLine','fNum'].forEach(k=>$('#'+k).addEventListener('change',e=>set(k,e.target.checked)));
 [['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign'],['hiMode','hiMode']].forEach(([id,k])=>$('#'+id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
@@ -758,7 +763,7 @@ $('#tb').addEventListener('mousedown',e=>{if(e.target.closest('button'))e.preven
 $('#tb').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.w)wrapSel(b.dataset.w);else if(b.dataset.l)prefixLines(b.dataset.l);else if('sub' in b.dataset)subLines();else if(b.dataset.ins)insertLine(b.dataset.ins)});
 ta.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey))return;const k=e.key.toLowerCase();
- if(k==='b'){e.preventDefault();wrapSel('**')}else if(k==='u'){e.preventDefault();wrapSel('__')}else if(k==='h'||(e.shiftKey&&k==='y')){e.preventDefault();wrapSel('==')}});
+ if(k==='b'){e.preventDefault();wrapSel('**')}else if(k==='u'){e.preventDefault();wrapSel('__')}else if(k==='h'||(e.shiftKey&&k==='y')){e.preventDefault();wrapSel('==')}else if(k==='k'){e.preventDefault();wrapSel('!!')}});
 /* 붙여넣기: 서식 없는 글자만 + 특수 공백 정리 */
 ta.addEventListener('paste',e=>{const t=e.clipboardData&&e.clipboardData.getData('text/plain');if(t==null)return;e.preventDefault();
  const clean=t.replace(/\r\n?/g,'\n').replace(/[   ]/g,' ').replace(/[​﻿]/g,'');
