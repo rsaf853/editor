@@ -224,11 +224,11 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    </div>
    <div class="f"><span class="lb">형광펜 <span>반투명</span></span>
     <div class="sws" id="hiSws">
-     <button data-c="#FF9BE6" style="background:#FF9BE6" aria-label="분홍"></button>
-     <button data-c="#7FD8FF" style="background:#7FD8FF" aria-label="하늘"></button>
-     <button data-c="#8BEB9A" style="background:#8BEB9A" aria-label="연두"></button>
-     <button data-c="#FFEC66" style="background:#FFEC66" aria-label="노랑"></button>
-     <button data-c="#CFCFCF" style="background:#CFCFCF" aria-label="회색"></button>
+     <button data-c="#FF6FD8" style="background:#FF6FD8" aria-label="분홍"></button>
+     <button data-c="#45C4FF" style="background:#45C4FF" aria-label="하늘"></button>
+     <button data-c="#4FE06A" style="background:#4FE06A" aria-label="연두"></button>
+     <button data-c="#FFE01A" style="background:#FFE01A" aria-label="노랑"></button>
+     <button data-c="#C2C2C2" style="background:#C2C2C2" aria-label="회색"></button>
      <label class="cl"><input type="color" id="hi"><span>직접</span></label>
     </div>
    </div>
@@ -316,7 +316,7 @@ const THEMES={light:{bg:'#ffffff',cText:'#777777',cAccent:'#000000',cSub:'#aaaaa
 const FOOT_GAP=24,PARA=5, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30, FOOT_SIZE=13, SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
- ...THEMES.light,hi:'#FF9BE6',
+ ...THEMES.light,hi:'#FF6FD8',
  ratio:'4:5',orient:'portrait',margin:70,bgTone:0,bgZoom:100,bgOX:0,bgOY:0,
  imPos:'top',imSize:360,imZoom:100,imOX:0,imOY:0,imBleed:false,imLine:false,
  fName:'',fSrc:'',fSep:'|',fAlign:'center',fPlace:'bottom',fNum:true,vAlign:'top'};
@@ -325,7 +325,7 @@ let S={...DEF};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}catch(e){}
 delete S.width;
 if(!['|','/',''].includes(S.fSep))S.fSep='|';
-{const M={'#ffb3ee':'#FF9BE6','#a8e6ff':'#7FD8FF','#b5f2bc':'#8BEB9A','#fff27a':'#FFEC66','#d9d9d9':'#CFCFCF','#ffccf4':'#FF9BE6','#c9f0ff':'#7FD8FF','#cef7d3':'#8BEB9A','#fff7a8':'#FFEC66','#e6e6e6':'#CFCFCF','#ffbdf0':'#FF9BE6','#b6eaff':'#7FD8FF','#bff4c5':'#8BEB9A','#fff38c':'#FFEC66','#dcdcdc':'#CFCFCF'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
+{const M={'#ffb3ee':'#FF6FD8','#a8e6ff':'#45C4FF','#b5f2bc':'#4FE06A','#fff27a':'#FFE01A','#d9d9d9':'#C2C2C2','#ffccf4':'#FF6FD8','#c9f0ff':'#45C4FF','#cef7d3':'#4FE06A','#fff7a8':'#FFE01A','#e6e6e6':'#C2C2C2','#ffbdf0':'#FF6FD8','#b6eaff':'#45C4FF','#bff4c5':'#4FE06A','#fff38c':'#FFE01A','#dcdcdc':'#C2C2C2','#ff9be6':'#FF6FD8','#7fd8ff':'#45C4FF','#8beb9a':'#4FE06A','#ffec66':'#FFE01A','#cfcfcf':'#C2C2C2'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
 S.bgTone=Math.min(90,Math.abs(+S.bgTone||0));
 if(S.ratio==='4:3'){S.ratio='3:4';S.orient='landscape'}else if(S.ratio==='16:9'){S.ratio='9:16';S.orient='landscape'}else if(!(S.ratio in RATIO)&&S.ratio!=='auto')S.ratio='4:5';
 let bgImg=null,imImg=null,page=0,pages=[],layout=null;
