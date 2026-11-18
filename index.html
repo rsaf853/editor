@@ -224,11 +224,11 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    </div>
    <div class="f"><span class="lb">형광펜 <span>반투명</span></span>
     <div class="sws" id="hiSws">
-     <button data-c="#FFCCF4" style="background:#FFCCF4" aria-label="분홍"></button>
-     <button data-c="#C9F0FF" style="background:#C9F0FF" aria-label="하늘"></button>
-     <button data-c="#CEF7D3" style="background:#CEF7D3" aria-label="연두"></button>
-     <button data-c="#FFF7A8" style="background:#FFF7A8" aria-label="노랑"></button>
-     <button data-c="#E6E6E6" style="background:#E6E6E6" aria-label="회색"></button>
+     <button data-c="#FFBDF0" style="background:#FFBDF0" aria-label="분홍"></button>
+     <button data-c="#B6EAFF" style="background:#B6EAFF" aria-label="하늘"></button>
+     <button data-c="#BFF4C5" style="background:#BFF4C5" aria-label="연두"></button>
+     <button data-c="#FFF38C" style="background:#FFF38C" aria-label="노랑"></button>
+     <button data-c="#DCDCDC" style="background:#DCDCDC" aria-label="회색"></button>
      <label class="cl"><input type="color" id="hi"><span>직접</span></label>
     </div>
    </div>
@@ -313,10 +313,10 @@ const FONTS={
 const RATIO={'1:1':1,'4:5':1.25,'3:4':4/3,'2:3':1.5,'9:16':16/9};
 const THEMES={light:{bg:'#ffffff',cText:'#777777',cAccent:'#000000',cSub:'#aaaaaa'},dark:{bg:'#111111',cText:'#9a9a9a',cAccent:'#ffffff',cSub:'#5f5f5f'}};
 /* 고정값 */
-const FOOT_GAP=24,PARA=5, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30, FOOT_SIZE=13, SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
+const FOOT_GAP=24,PARA=5, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30, FOOT_SIZE=13, SUB_SCALE=.8, HI_ALPHA=.6, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
- ...THEMES.light,hi:'#FFCCF4',
+ ...THEMES.light,hi:'#FFBDF0',
  ratio:'4:5',orient:'portrait',margin:70,bgTone:0,bgZoom:100,bgOX:0,bgOY:0,
  imPos:'top',imSize:360,imZoom:100,imOX:0,imOY:0,imBleed:false,imLine:false,
  fName:'',fSrc:'',fSep:'|',fAlign:'center',fPlace:'bottom',fNum:true,vAlign:'top'};
@@ -325,7 +325,7 @@ let S={...DEF};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}catch(e){}
 delete S.width;
 if(!['|','/',''].includes(S.fSep))S.fSep='|';
-{const M={'#ffb3ee':'#FFCCF4','#a8e6ff':'#C9F0FF','#b5f2bc':'#CEF7D3','#fff27a':'#FFF7A8','#d9d9d9':'#E6E6E6'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
+{const M={'#ffb3ee':'#FFBDF0','#a8e6ff':'#B6EAFF','#b5f2bc':'#BFF4C5','#fff27a':'#FFF38C','#d9d9d9':'#DCDCDC','#ffccf4':'#FFBDF0','#c9f0ff':'#B6EAFF','#cef7d3':'#BFF4C5','#fff7a8':'#FFF38C','#e6e6e6':'#DCDCDC'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
 S.bgTone=Math.min(90,Math.abs(+S.bgTone||0));
 if(S.ratio==='4:3'){S.ratio='3:4';S.orient='landscape'}else if(S.ratio==='16:9'){S.ratio='9:16';S.orient='landscape'}else if(!(S.ratio in RATIO)&&S.ratio!=='auto')S.ratio='4:5';
 let bgImg=null,imImg=null,page=0,pages=[],layout=null;
@@ -564,7 +564,7 @@ function draw(ctx,p,total,scale){
  const by=H-Math.round(Math.max(30,S.margin*.55));
  // 번호는 출처 바로 옆에 한 덩어리로: 왼쪽 정렬이면 [번호 출처], 그 외엔 [출처 번호]
  const GAP=16,nm=S.fName.trim(),sr=S.fSrc.trim();
- const p1=nm&&sr?(S.fSep?`${nm}  ${S.fSep}  `:`${nm}    `):(nm||sr),p2=nm&&sr?sr:'';
+ const p1=nm&&sr?(S.fSep?`${nm}  ${S.fSep}  `:`${nm}   `):(nm||sr),p2=nm&&sr?sr:'';
  const w1=p.hasSrc?wOf(p1)+(p2?ls:0):0,ws=p.hasSrc?w1+wOf(p2):0;
  const pl=p.numOn?`${p.idx+1} / ${total}`:'',wp=wOf(pl);
  const tw=ws+(ws&&wp?GAP:0)+wp;
