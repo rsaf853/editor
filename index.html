@@ -238,7 +238,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
   <!-- 03 CANVAS -->
   <div class="sec a" style="--i:3">
    <div class="lab"><b>03</b><span>CANVAS</span></div>
-   <div class="f"><label>비율</label><div class="seg" id="ratio"><button data-v="1:1">1:1</button><button data-v="4:5">4:5</button><button data-v="3:4">3:4</button><button data-v="2:3">2:3</button><button data-v="9:16">9:16</button><button data-v="auto">자동</button></div></div>
+   <div class="f"><label>비율</label><div class="seg" id="ratio"><button data-v="1:1">1:1</button><button data-v="4:5">4:5</button><button data-v="3:4">3:4</button><button data-v="auto">자동</button></div></div>
    <div class="r2">
     <div class="f"><label>방향</label><div class="seg" id="orient"><button data-v="portrait"><i class="ori"></i>세로</button><button data-v="landscape"><i class="ori w"></i>가로</button></div></div>
     <div class="f"><label>내용 위치</label><div class="seg" id="vAlign"><button data-v="top"><svg viewBox="0 0 12 14" width="12" height="14" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="12" height="1.2" opacity=".4"/><rect x="0" y="12.8" width="12" height="1.2" opacity=".4"/><rect x="2" y="3" width="8" height="1.5"/><rect x="2" y="6" width="8" height="1.5"/></svg><span style="margin-left:6px">위</span></button><button data-v="center"><svg viewBox="0 0 12 14" width="12" height="14" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="12" height="1.2" opacity=".4"/><rect x="0" y="12.8" width="12" height="1.2" opacity=".4"/><rect x="2" y="5" width="8" height="1.5"/><rect x="2" y="8" width="8" height="1.5"/></svg><span style="margin-left:6px">중앙</span></button></div></div>
@@ -311,7 +311,7 @@ const FONTS={
  nexon:{n:'넥슨 Lv.1 고딕',css:"'NexonLv1Gothic',"+SANS_FB},
  paperlogy:{n:'페이퍼로지',css:"'Paperlogy',"+SANS_FB}
 };
-const RATIO={'1:1':1,'4:5':1.25,'3:4':4/3,'2:3':1.5,'9:16':16/9};
+const RATIO={'1:1':1,'4:5':1.25,'3:4':4/3};
 const THEMES={light:{bg:'#ffffff',cText:'#777777',cAccent:'#000000',cSub:'#aaaaaa'},dark:{bg:'#111111',cText:'#9a9a9a',cAccent:'#ffffff',cSub:'#5f5f5f'}};
 /* 고정값 */
 const HI_TEXT='#111111';
@@ -332,7 +332,8 @@ if(S.hiMode!=='soft')S.hiMode='solid';
 if(!['|','/',''].includes(S.fSep))S.fSep='|';
 {const M={'#ffb3ee':'#FFE0F9','#a8e6ff':'#DBF7FF','#b5f2bc':'#DBFFDF','#fff27a':'#FFFDC0','#d9d9d9':'#EDEDED','#ffccf4':'#FFE0F9','#c9f0ff':'#DBF7FF','#cef7d3':'#DBFFDF','#fff7a8':'#FFFDC0','#e6e6e6':'#EDEDED','#ffbdf0':'#FFE0F9','#b6eaff':'#DBF7FF','#bff4c5':'#DBFFDF','#fff38c':'#FFFDC0','#dcdcdc':'#EDEDED','#ff9be6':'#FFE0F9','#7fd8ff':'#DBF7FF','#8beb9a':'#DBFFDF','#ffec66':'#FFFDC0','#cfcfcf':'#EDEDED','#ff6fd8':'#FFE0F9','#45c4ff':'#DBF7FF','#4fe06a':'#DBFFDF','#ffe01a':'#FFFDC0','#c2c2c2':'#EDEDED','#f9ff7f':'#FFFDC0','#ffc1f3':'#FFE0F9','#b7efff':'#DBF7FF','#b7ffbf':'#DBFFDF','#ffe981':'#FFFDC0','#dbdbdb':'#EDEDED','#fff4c0':'#FFFDC0'};const k=String(S.hi).toLowerCase();if(M[k])S.hi=M[k]}
 S.bgTone=Math.min(90,Math.abs(+S.bgTone||0));
-if(S.ratio==='4:3'){S.ratio='3:4';S.orient='landscape'}else if(S.ratio==='16:9'){S.ratio='9:16';S.orient='landscape'}else if(!(S.ratio in RATIO)&&S.ratio!=='auto')S.ratio='4:5';
+if(S.ratio==='4:3'||S.ratio==='16:9'){S.ratio='3:4';S.orient='landscape'}
+if(!(S.ratio in RATIO)&&S.ratio!=='auto')S.ratio='4:5';
 let bgImg=null,imImg=null,page=0,pages=[],layout=null;
 
 /* ========== 파싱 ========== */
