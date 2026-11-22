@@ -309,7 +309,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
     <div class="f"><label>정렬</label><div class="seg" id="fAlign"><button data-v="left" aria-label="왼쪽"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="0" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="0" y="10.5" width="7" height="1.5"/></svg></button><button data-v="center" aria-label="가운데"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="2.5" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="3.5" y="10.5" width="7" height="1.5"/></svg></button><button data-v="right" aria-label="오른쪽"><svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true"><rect x="0" y="0.0" width="14" height="1.5"/><rect x="5" y="3.5" width="9" height="1.5"/><rect x="0" y="7.0" width="14" height="1.5"/><rect x="7" y="10.5" width="7" height="1.5"/></svg></button></div></div>
    </div>
    <div class="f"><label>자리</label><div class="seg" id="fPlace"><button data-v="bottom">페이지 맨 아래</button><button data-v="after">본문 바로 아래</button></div></div>
-   <div class="f" style="margin:0"><label>페이지 번호 <span>2장 이상일 때</span></label><div class="seg" id="fNumFmt"><button data-v="off">없음</button><button data-v="of">1 / 3</button><button data-v="n">1</button><button data-v="pad">01</button></div></div>
+   <div class="f" style="margin:0"><label>페이지 번호 <span>2장 이상일 때</span></label><div class="seg" id="fNumFmt"><button data-v="off">없음</button><button data-v="of">1 / 3</button><button data-v="n">1</button></div></div>
   </div>
 
   <div class="sec a" style="--i:6">
@@ -359,7 +359,7 @@ const KEY='rosie_compact_v1';
 let S={...DEF};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}catch(e){}
 delete S.width;
-if(S.fNum===false)S.fNumFmt='off';delete S.fNum;if(!['off','of','n','pad'].includes(S.fNumFmt))S.fNumFmt='of';
+if(S.fNum===false)S.fNumFmt='off';delete S.fNum;if(S.fNumFmt==='pad')S.fNumFmt='n';if(!['off','of','n'].includes(S.fNumFmt))S.fNumFmt='of';
 if(String(S.cPoint).toLowerCase()==='#e0608a')S.cPoint='#3A6FE0';
 if(S.font==='nexon')S.font='bookkgothic';
 if(!(S.font in FONTS))S.font='pretendard';
@@ -613,7 +613,7 @@ function draw(ctx,p,total,scale){
  const nmT=nm,sepT=nm&&sr?(S.fSep?`  ${S.fSep}  `:'  '):'',srT=sr;
  const wN=wOf(nmT),wS=wOf(sepT),wR=wOf(srT);
  const ws=p.hasSrc?wN+(nmT&&sepT?ls:0)+wS+(sepT&&srT?ls:0)+wR:0;
- const n=p.idx+1,pl=!p.numOn?'':S.fNumFmt==='n'?`${n}`:S.fNumFmt==='pad'?String(n).padStart(2,'0'):`${n} / ${total}`,wp=wOf(pl);
+ const n=p.idx+1,pl=!p.numOn?'':S.fNumFmt==='n'?`${n}`:`${n} / ${total}`,wp=wOf(pl);
  const tw=ws+(ws&&wp?GAP:0)+wp;
  const putB=(str,x,y,col)=>{if(!str)return;ctx.save();ctx.strokeStyle=col;ctx.lineWidth=Math.max(.25,footSize()*.025);ctx.lineJoin='round';const a=advs(str,f);let xx=x;[...str].forEach((ch,i)=>{ctx.strokeText(ch,xx,y);xx+=a[i]});ctx.restore();put(str,x,y,col)};
  if(tw){
