@@ -601,9 +601,11 @@ function draw(ctx,p,total,scale){
   });
  }
  // ---- 출처(이름 진하게 · 출처 연하게) + 페이지 번호 ----
- const f=fontOf(0,footSize()),soft=hexA(S.cText,.55);ctx.font=f;
+ const f=fontOf(0,footSize()),soft=hexA(S.cText,.45),nameCol=hexA(S.cText,.8);ctx.font=f;
+ /* 이름은 볼드: 프리텐다드는 600, 나머지는 700 */
+ const fB=`${S.font==='pretendard'?600:700} ${footSize()}px ${FONTS[S.font].css}`;
  const wOf=str=>str?advs(str,f).reduce((a,c)=>a+c,0)-ls:0;
- const put=(str,x,y,col)=>{if(!str)return;ctx.fillStyle=col;const a=advs(str,f);[...str].forEach((ch,i)=>{ctx.fillText(ch,x,y);x+=a[i]})};
+ const put=(str,x,y,col,ff=f)=>{if(!str)return;ctx.font=ff;ctx.fillStyle=col;const a=advs(str,ff);[...str].forEach((ch,i)=>{ctx.fillText(ch,x,y);x+=a[i]});ctx.font=f};
  // 좌우는 본문 글 영역 끝에 맞춤
  const ra=p.cx,rb=p.cx+p.cwid;
  const by=H-Math.round(Math.max(40,S.margin*55/70));
@@ -611,19 +613,18 @@ function draw(ctx,p,total,scale){
  const GAP=16,nm=S.fName.trim(),sr=S.fSrc.trim();
  // 이름(진하게, 살짝 굵게) + 구분 기호 + 출처(연하게)
  const nmT=nm,sepT=nm&&sr?(S.fSep?`  ${S.fSep}  `:'  '):'',srT=sr;
- const wN=wOf(nmT),wS=wOf(sepT),wR=wOf(srT);
+ const wN=nmT?advs(nmT,fB).reduce((a,c)=>a+c,0)-ls:0,wS=wOf(sepT),wR=wOf(srT);
  const ws=p.hasSrc?wN+(nmT&&sepT?ls:0)+wS+(sepT&&srT?ls:0)+wR:0;
  const n=p.idx+1,pl=!p.numOn?'':S.fNumFmt==='n'?`${n}`:`${n} / ${total}`,wp=wOf(pl);
  const tw=ws+(ws&&wp?GAP:0)+wp;
- const putB=(str,x,y,col)=>{if(!str)return;ctx.save();ctx.strokeStyle=col;ctx.lineWidth=Math.max(.25,footSize()*.025);ctx.lineJoin='round';const a=advs(str,f);let xx=x;[...str].forEach((ch,i)=>{ctx.strokeText(ch,xx,y);xx+=a[i]});ctx.restore();put(str,x,y,col)};
  if(tw){
   const y=p.afterH>0?oy+p.y+FOOT_GAP+footSize()*.9:by;
   let x=S.fAlign==='left'?ra:S.fAlign==='right'?rb-tw:(ra+rb-tw)/2;
   if(S.fAlign==='left'&&wp){put(pl,x,y,soft);x+=wp+(ws?GAP:0)}
   if(ws){
-   if(nmT){putB(nmT,x,y,S.cText);x+=wN+(sepT?ls:0)}
-   if(sepT){put(sepT,x,y,S.cText);x+=wS+(srT?ls:0)}
-   if(srT){put(srT,x,y,nmT?soft:S.cText);x+=wR}
+   if(nmT){put(nmT,x,y,nameCol,fB);x+=wN+(sepT?ls:0)}
+   if(sepT){put(sepT,x,y,nameCol);x+=wS+(srT?ls:0)}
+   if(srT){put(srT,x,y,nmT?soft:nameCol);x+=wR}
    x+=wp?GAP:0;
   }
   if(S.fAlign!=='left'&&wp)put(pl,x,y,soft);
