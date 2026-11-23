@@ -30,7 +30,7 @@
 *{box-sizing:border-box;border-radius:0}
 html,body{margin:0}
 /* 모바일 확대 막기: 더블탭 확대 끔, 가로 회전 시 글자 커짐 끔 */
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--fg);font:400 14px/1.6 var(--sans);letter-spacing:-.03em;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;letter-spacing:inherit;color:inherit}
 /* 드래그(선택) 시 색 반전 */
@@ -122,6 +122,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 .chk{display:flex;align-items:center;gap:8px;font:600 12px var(--sans);cursor:pointer;user-select:none}
 .chk input{appearance:none;-webkit-appearance:none;width:14px;height:14px;border:1px solid var(--fg);margin:0;display:grid;place-items:center;cursor:pointer}
 .chk input:checked{background:var(--fg)}
+.chk.mini{gap:4px;font:600 11px/1 var(--sans);color:var(--fg)}.chk.mini input{width:10px;height:10px}.chk.mini input:checked::after{width:4px;height:4px}
 .chk input:checked::after{content:"";width:6px;height:6px;background:var(--bg)}
 
 .btn{display:block;width:100%;border:1px solid var(--fg);background:none;padding:7px;font:700 10px var(--sans);letter-spacing:.1em;text-align:center;cursor:pointer}
@@ -235,7 +236,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
     <div class="f"><label>자간 <output id="lsO"></output></label><input type="range" id="ls" min="-2" max="3" step="0.1"></div>
     <div class="f"><label>들여쓰기 <output id="indentO"></output></label><input type="range" id="indent" min="0" max="60" step="5"></div>
    </div>
-   <div class="f"><div class="lb" style="align-items:center">색상<label class="chk" style="font-size:11px;color:var(--fg)"><input type="checkbox" id="qBold">대사 굵게</label></div>
+   <div class="f"><div class="lb" style="align-items:center">색상<label class="chk mini"><input type="checkbox" id="qBold">대사 굵게</label></div>
     <div class="r2 cg">
      <label class="cl"><input type="color" id="cText"><span>본문</span></label>
      <label class="cl"><input type="color" id="cAccent"><span>대사 " "</span></label>
