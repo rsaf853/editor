@@ -80,7 +80,6 @@ select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(
 textarea{display:block;resize:vertical;min-height:200px;line-height:1.65;font-size:13px}
 .ed{border:1px solid var(--line)}.ed:focus-within{border-color:var(--fg)}
 .ed textarea{border:0;padding:10px}
-textarea.ti{min-height:0;height:33px;resize:none;border-top:1px solid var(--line)}
 
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;background:none;margin:0}
 input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--fg)}
@@ -197,7 +196,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
   <!-- 01 TEXT -->
   <div class="sec a" style="--i:1">
    <div class="lab">TEXT</div>
-   <div class="f"><textarea id="title" class="ti" rows="1" placeholder="제목"></textarea></div>
+   <div class="f"><input type="text" id="title" placeholder="제목" autocomplete="off"></div>
    <div class="ed">
    <div class="tb" id="tb">
     <button data-w="**" title="굵게 (Ctrl+B)"><b>B</b></button>
