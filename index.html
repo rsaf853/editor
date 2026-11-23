@@ -232,7 +232,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
     <div class="f"><label>자간 <output id="lsO"></output></label><input type="range" id="ls" min="-2" max="3" step="0.1"></div>
     <div class="f"><label>들여쓰기 <output id="indentO"></output></label><input type="range" id="indent" min="0" max="60" step="5"></div>
    </div>
-   <div class="f"><span class="lb">색상</span>
+   <div class="f"><div class="lb" style="align-items:center">색상<label class="chk" style="font-size:11px;color:var(--fg)"><input type="checkbox" id="qBold">대사 굵게</label></div>
     <div class="r2 cg">
      <label class="cl"><input type="color" id="cText"><span>본문</span></label>
      <label class="cl"><input type="color" id="cAccent"><span>대사 " "</span></label>
@@ -351,7 +351,7 @@ const isDark=h=>{const n=parseInt(String(h).slice(1),16);return((n>>16&255)*.299
 const FOOT_GAP=32,PARA=3, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
- ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',cPoint:'#3A6FE0',
+ ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',qBold:false,cPoint:'#3A6FE0',
  ratio:'4:5',orient:'portrait',margin:70,bgTone:0,bgZoom:100,bgOX:0,bgOY:0,
  imPos:'top',imSize:360,imZoom:100,imOX:0,imOY:0,imBleed:false,imLine:false,
  fName:'',fSrc:'',fSep:'|',fAlign:'center',fPlace:'bottom',fNumFmt:'of',vAlign:'top'};
@@ -431,7 +431,7 @@ function kernAll(gs){for(let i=0;i<gs.length;i++){const g=gs[i],n=gs[i+1];g.w=cw
 function advs(str,font){const cs=[...str];return cs.map((ch,i)=>cw(ch,font)+kern(ch,cs[i+1],font)+S.ls)}
 function glyphs(g,size,forceBold){
  /* 대사 본문의 따옴표 기호는 자동으로 뺌 */
- return kernAll(g.filter(c=>!(c.qm&&c.inDlg)).map(c=>{const sz=c.sub?size*SUB_SCALE:size,font=fontOf(c.b||c.head||forceBold,sz);return{...c,sz,font}}));
+ return kernAll(g.filter(c=>!(c.qm&&c.inDlg)).map(c=>{const sz=c.sub?size*SUB_SCALE:size,font=fontOf(c.b||c.head||forceBold||(S.qBold&&c.q),sz);return{...c,sz,font}}));
 }
 function wrap(gs,avail,first){
  const ls=S.ls,lines=[];let cur=[],cw_=0;
@@ -472,7 +472,7 @@ function build(){
   items.push({k:'space',h:0,gap:TITLE_GAP-PARA});
   prev='title';
  }
- blocks.forEach(b=>{
+ blocks.forEach((b,bi)=>{
   const gapB=items.length?PARA:0;
   if(b.k==='page'){items.push({k:'page'});prev=null;lastDlg=false;return}
   /* 빈 줄: 한 줄만 띄우면 반 줄 높이, 연달아 더 띄우면 그다음부터는 한 줄씩 */
@@ -482,7 +482,7 @@ function build(){
    // 대사 바로 밑에 붙임: 사이에 낀 빈 줄 제거
    while(items.length&&items[items.length-1].blank)items.pop();
    const gs=glyphs(b.g,size),sl=lh*SUB_SCALE;
-   wrap(gs,cwid-nameCol,0).forEach((l,i)=>items.push({k:'line',l,x:nameCol,w:cwid-nameCol,h:sl,gap:i?0:2,align:S.align==='center'?'left':S.align,sz:size*SUB_SCALE}));
+   const sls=wrap(gs,cwid-nameCol,0);sls.forEach((l,i)=>items.push({k:'line',blk:bi,li:i,ln:sls.length,l,x:nameCol,w:cwid-nameCol,h:sl,gap:i?0:2,align:S.align==='center'?'left':S.align,sz:size*SUB_SCALE}));
    prev='sub';return;
   }
   const isQ=b.k==='quote',isD=b.k==='dlg',isS=b.k==='sub',isL=b.k==='li';
@@ -493,8 +493,9 @@ function build(){
   const first=(b.k==='p'||isQ)?S.indent:0;
   const al=(isD||isL)&&S.align==='center'?'left':S.align;
   const lhh=isS?lh*SUB_SCALE:lh;
-  wrap(gs,w,first).forEach((l,i)=>{
-   items.push({k:'line',l,x,w,h:lhh,gap:i?0:(isQ&&prev==='quote'?PARA:gapB),align:al,indent:i===0?first:0,quote:isQ,qJoin:isQ&&(i>0||prev==='quote'),name:isD&&i===0?b.name:null,mark:isL&&i===0?b.mark:null,sz:isS?size*SUB_SCALE:size});
+  const head=b.g.some(c=>c.head),wl=wrap(gs,w,first);
+  wl.forEach((l,i)=>{
+   items.push({k:'line',blk:bi,li:i,ln:wl.length,keepNext:head&&i===wl.length-1,l,x,w,h:lhh,gap:i?0:(isQ&&prev==='quote'?PARA:gapB),align:al,indent:i===0?first:0,quote:isQ,qJoin:isQ&&(i>0||prev==='quote'),name:isD&&i===0?b.name:null,mark:isL&&i===0?b.mark:null,sz:isS?size*SUB_SCALE:size});
   });
   prev=isQ?'quote':b.k;lastDlg=isD||(lastDlg&&isS);
  });
@@ -515,12 +516,27 @@ function build(){
   const out=[];let cur={items:[],y:0},pi=0;
   const cap=()=>auto?Infinity:H-topFor(pi)-botFor(pi)-afterH;
   const flush=()=>{out.push(cur);pi++;cur={items:[],y:0}};
+  const add=it=>{const g=cur.items.length?it.gap:0;if(!cur.items.length&&it.blank)return;
+   cur.items.push({...it,y:cur.y+g,qJoin:!!it.qJoin&&cur.items.length>0,gapUsed:g});cur.y+=g+it.h};
   for(const it of items){
    if(it.k==='page'){flush();continue}
-   let g=cur.items.length?it.gap:0;
-   if(cur.items.length&&cur.y+g+it.h>cap()+0.5){flush();g=0}
-   if(!cur.items.length&&it.blank)continue;
-   cur.items.push({...it,y:cur.y+g,qJoin:it.qJoin&&cur.items.length>0,gapUsed:g});cur.y+=g+it.h;
+   const g=cur.items.length?it.gap:0;
+   if(cur.items.length&&cur.y+g+it.h>cap()+0.5){
+    /* 자연스럽게 끊기: 최대 한 줄만 다음 장으로 넘겨서
+       - 문단 첫 줄 하나만 아래에 홀로 남지 않게
+       - 문단 마지막 줄 하나만 다음 장 맨 위에 홀로 가지 않게
+       - 소제목이 장 맨 끝에 혼자 남지 않게 */
+    const L=cur.items.length,last=cur.items[L-1];let mv=0;
+    if(it.blk!=null&&last.blk===it.blk){const k=it.li,rest=it.ln-k;if(k===1)mv=1;else if(rest===1&&k>=3)mv=1}
+    else if(last.keepNext)mv=1;
+    // 끝에 빈 줄만 남는 경우도 정리
+    while(cur.items.length>1&&cur.items[cur.items.length-1].blank){cur.items.pop()}
+    if(mv>=cur.items.length)mv=0;
+    const carry=mv?cur.items.splice(cur.items.length-mv,mv):[];
+    if(cur.items.length){const z=cur.items[cur.items.length-1];cur.y=z.y+z.h}
+    flush();carry.forEach(add);
+   }
+   add(it);
   }
   out.push(cur);
   // 끝에 빈 페이지 제거
@@ -668,7 +684,7 @@ function sync(){
  Object.keys(fmt).forEach(k=>{$('#'+k).value=S[k];$('#'+k+'O').textContent=fmt[k](S[k])});
  ['cText','cAccent','cSub','cPoint','bg','hi'].forEach(k=>$('#'+k).value=S[k]);
  $('#ptSw').style.borderBottomColor=S.cPoint;
- ['imBleed','imLine'].forEach(k=>$('#'+k).checked=S[k]);
+ ['imBleed','imLine','qBold'].forEach(k=>$('#'+k).checked=S[k]);
  [['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign'],['hiMode','hiMode'],['fNumFmt','fNumFmt']].forEach(([id,k])=>document.querySelectorAll(`#${id} button`).forEach(b=>b.classList.toggle('on',b.dataset.v===S[k])));
  const th=Object.entries(THEMES).find(([,t])=>t.bg===S.bg&&t.cText===S.cText);
  document.querySelectorAll('#theme button').forEach(b=>b.classList.toggle('on',!!th&&th[0]===b.dataset.v));
@@ -686,7 +702,7 @@ fontSel.addEventListener('change',e=>set('font',e.target.value));
 Object.keys(fmt).forEach(k=>$('#'+k).addEventListener('input',e=>{const v=+e.target.value;$('#'+k+'O').textContent=fmt[k](v);set(k,v)}));
 ['cText','cAccent','cSub','cPoint','bg'].forEach(k=>$('#'+k).addEventListener('input',e=>{set(k,e.target.value);sync()}));
 $('#hi').addEventListener('input',e=>{set('hi',e.target.value);sync()});
-['imBleed','imLine'].forEach(k=>$('#'+k).addEventListener('change',e=>set(k,e.target.checked)));
+['imBleed','imLine','qBold'].forEach(k=>$('#'+k).addEventListener('change',e=>set(k,e.target.checked)));
 [['align','align'],['ratio','ratio'],['orient','orient'],['imPos','imPos'],['fSep','fSep'],['fAlign','fAlign'],['fPlace','fPlace'],['vAlign','vAlign'],['hiMode','hiMode'],['fNumFmt','fNumFmt']].forEach(([id,k])=>$('#'+id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(k==='imPos'&&S.imPos!==b.dataset.v){const isCol=v=>v==='left'||v==='right';if(isCol(b.dataset.v)!==isCol(S.imPos))S.imSize=isCol(b.dataset.v)?280:360}
  set(k,b.dataset.v);sync()}));
