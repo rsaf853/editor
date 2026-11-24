@@ -79,7 +79,11 @@ input::placeholder,textarea::placeholder{color:var(--mut)}
 select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--fg) 50%),linear-gradient(135deg,var(--fg) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:28px}
 textarea{display:block;resize:vertical;min-height:200px;line-height:1.65;font-size:13px}
 .ed{border:1px solid var(--line)}.ed:focus-within{border-color:var(--fg)}
-.ed textarea{border:0;padding:10px}
+.ed textarea{border:0;padding:10px;resize:none}
+/* 입력창 높이 조절 손잡이 (모바일에서도 동작) */
+.rh{height:14px;display:grid;place-items:center;cursor:ns-resize;touch-action:none;border-top:1px solid var(--line)}
+.rh i{display:block;width:28px;height:2px;background:var(--mut);opacity:.6}
+.rh:hover i,.rh.on i{background:var(--fg);opacity:1}
 
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;background:none;margin:0}
 input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--fg)}
@@ -214,6 +218,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
     <button data-ins="===" title="페이지 나눔"><svg viewBox="0 0 14 14" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M3 1h8v4.5H9.5V2.5h-5v3H3z"/><path d="M3 8.5h1.5v3h5v-3H11V13H3z"/><rect x="0.5" y="6.25" width="13" height="1.5" opacity=".45"/></svg></button>
    </div>
    <textarea id="text" spellcheck="false" placeholder="여기에 붙여넣기"></textarea>
+   <div class="rh" id="rh" title="드래그해서 높이 조절"><i></i></div>
    </div>
    <p class="hint">
     <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬(따옴표 자동 제거) · <code>&lt;sub&gt;</code> 자동 변환<br>
@@ -841,6 +846,15 @@ rz.addEventListener('dblclick',()=>{setPW(PW_DEF);try{localStorage.removeItem(PW
 /* 아이폰 사파리는 user-scalable=no 를 무시하므로 핀치 확대를 직접 막음 */
 ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+
+/* ---- 본문 입력창 높이 조절 ---- */
+{const TH_KEY='rosie_compact_th',rh=$('#rh');let st=null;
+ try{const v=+localStorage.getItem(TH_KEY);if(v)ta.style.height=v+'px'}catch(e){}
+ rh.addEventListener('pointerdown',e=>{st={y:e.clientY,h:ta.getBoundingClientRect().height};rh.setPointerCapture(e.pointerId);rh.classList.add('on');e.preventDefault()});
+ rh.addEventListener('pointermove',e=>{if(!st)return;ta.style.height=Math.max(120,Math.min(1400,st.h+e.clientY-st.y))+'px'});
+ const end=()=>{if(!st)return;st=null;rh.classList.remove('on');try{localStorage.setItem(TH_KEY,Math.round(ta.getBoundingClientRect().height))}catch(e){}};
+ rh.addEventListener('pointerup',end);rh.addEventListener('pointercancel',end);
+ rh.addEventListener('dblclick',()=>{ta.style.height='';try{localStorage.removeItem(TH_KEY)}catch(e){}})}
 
 sync();render();loadFonts();
 </script>
