@@ -145,7 +145,8 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 /* 꾹 눌러 저장 창 */
 .dlg .bx.iv{width:min(440px,100%)}
 .ivs{max-height:min(68vh,760px);overflow:auto;padding:0 14px 14px;display:grid;gap:10px;-webkit-overflow-scrolling:touch}
-.ivs img{display:block;width:100%;height:auto;box-shadow:0 0 0 1px var(--line);-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+.dlg .ms.ivh{padding:12px 14px 10px;font-size:11px;color:var(--mut)}
+.ivs img{display:block;width:100%;height:auto;border:1px solid var(--line);box-sizing:border-box;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
 /* 프리셋 목록 */
 .pl{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.pl:empty{display:none}
 .pc{display:flex;border:1px solid var(--fg)}
@@ -325,7 +326,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
  </aside>
 </div>
 <div class="toast" id="toast"></div>
-<div class="dlg" id="imv" role="dialog" aria-modal="true" aria-label="이미지 저장"><div class="bx iv"><div class="tt"><span>SAVE</span><span id="ivN"></span></div><p class="ms">사진을 길게 꾹 누르면 저장할 수 있어요.</p><div class="ivs" id="ivs"></div><div class="bt"><button id="ivClose">CLOSE</button></div></div></div>
+<div class="dlg" id="imv" role="dialog" aria-modal="true" aria-label="이미지 저장"><div class="bx iv"><div class="tt"><span>SAVE</span><span id="ivN"></span></div><p class="ms ivh">사진을 길게 꾹 누르면 저장할 수 있어요.</p><div class="ivs" id="ivs"></div><div class="bt"><button id="ivClose">CLOSE</button></div></div></div>
 <div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT"><div class="bx"><div class="tt"><span id="dlgT">RESET</span></div><p class="ms" id="dlgM"></p><div class="di" id="dlgIW" hidden><input type="text" id="dlgI" maxlength="20" placeholder="프리셋 이름" autocomplete="off"></div><div class="bt"><button id="dlgN">CANCEL</button><button id="dlgY">OK</button></div></div></div>
 
 <script>
