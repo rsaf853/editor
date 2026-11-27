@@ -247,7 +247,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    </div>
    <p class="hint">
     <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬 · <code>&lt;sub&gt;</code> 자동 변환<br>
-    <code>&gt; 인용</code> · <code>## 소제목</code> · <code>- 목록</code> · <code>---</code> 구분선 · <code>===</code> 페이지 나눔
+    <code>#·##·###</code> 소제목 · <code>- 목록</code> · <code>---</code> 구분선 · <code>===</code> 페이지 나눔
    </p>
   </div>
 
@@ -385,8 +385,11 @@ const footSize=()=>Math.round(S.size*.75*2)/2;
 /* 대사 이름은 본문보다 1px 작게 */
 const NAME_DELTA=1,nameSize=()=>S.size-NAME_DELTA;
 const BLANK_RATIO=.35;
+const mixHex=(a,b,t)=>{const p=h=>{const n=parseInt(h.slice(1),16);return[n>>16&255,n>>8&255,n&255]},A=p(a),B=p(b);return'#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')};
 const isDark=h=>{const n=parseInt(String(h).slice(1),16);return((n>>16&255)*.299+(n>>8&255)*.587+(n&255)*.114)<128};
-const FOOT_GAP=32,PARA=3, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=35, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
+/* 제목 단계: 본문 크기 대비 비율 · 굵기 (본문 20 기준 26 / 22 / 20 / 17) */
+const TITLE_SCALE=1.3,TITLE_W=800,HEAD={1:{s:1.1,w:700},2:{s:1,w:600},3:{s:.85,w:500}};
+const FOOT_GAP=32,PARA=3, TITLE_GAP_SCALE=1.2, NAME_GAP=35, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
  ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',qBold:false,cPoint:'#3A6FE0',
@@ -446,7 +449,7 @@ function parse(text){
   if(!t){out.push({k:'blank'});continue}
   if((m=t.match(/^<sub>(.*)<\/sub>$/i))&&!/<\/?sub>/i.test(m[1])){out.push({k:'sub',g:inline(m[1]).map(c=>({...c,sub:1}))});continue}
   if((m=t.match(/^>\s?(.*)$/))){out.push({k:'quote',g:inline(m[1])});continue}
-  if((m=t.match(/^#{1,6}\s+(.*)$/))){out.push({k:'p',g:inline(m[1]).map(c=>({...c,head:1}))});continue}
+  if((m=t.match(/^(#{1,6})\s+(.*)$/))){const hl=Math.min(3,m[1].length);out.push({k:'p',hl,g:inline(m[2]).map(c=>({...c,head:hl}))});continue}
   if((m=t.match(/^([-*•·–])\s+(.+)$/))){out.push({k:'li',mark:m[1]==='*'?'•':m[1],g:inline(m[2])});continue}
   let d=null;for(const re of DLG){if((m=t.match(re))&&m[1].trim()){d={name:m[1].trim(),body:m[2]};break}}
   if(d){out.push({k:'dlg',name:d.name,g:inline(d.body).map(c=>({...c,inDlg:1}))});continue}
@@ -458,7 +461,7 @@ function parse(text){
 /* ========== 측정 / 줄바꿈 ========== */
 const mc=document.createElement('canvas').getContext('2d');
 const wCache=new Map();
-const fontOf=(bold,size)=>`${bold?700:400} ${size}px ${FONTS[S.font].css}`;
+const fontOf=(bold,size)=>`${typeof bold==='number'&&bold>1?bold:bold?700:400} ${size}px ${FONTS[S.font].css}`;
 function cw(ch,font){const k=font+'\u0000'+ch;let w=wCache.get(k);if(w==null){mc.font=font;w=mc.measureText(ch).width;wCache.set(k,w)}return w}
 /* 글자쌍 간격(커닝): 두 글자를 붙여 잰 폭 - 각각 잰 폭. 한 글자씩 그려도 영문 대문자 뒤가 벌어지지 않게 */
 const kCache=new Map();
@@ -469,7 +472,7 @@ function kernAll(gs){for(let i=0;i<gs.length;i++){const g=gs[i],n=gs[i+1];g.w=cw
 function advs(str,font){const cs=[...str];return cs.map((ch,i)=>cw(ch,font)+kern(ch,cs[i+1],font)+S.ls)}
 function glyphs(g,size,forceBold){
  /* 대사 본문의 따옴표 기호는 자동으로 뺌 */
- return kernAll(g.filter(c=>!(c.qm&&c.inDlg)).map(c=>{const sz=c.sub?size*SUB_SCALE:size,font=fontOf(c.b||c.head||forceBold||(S.qBold&&c.q),sz);return{...c,sz,font}}));
+ return kernAll(g.filter(c=>!(c.qm&&c.inDlg)).map(c=>{const H=c.head?HEAD[c.head]:null,sz=c.sub?size*SUB_SCALE:H?size*H.s:size,font=fontOf(H?(c.b?Math.max(700,H.w):H.w):(c.b||forceBold||(S.qBold&&c.q)),sz);return{...c,sz,font}}));
 }
 function wrap(gs,avail,first){
  const ls=S.ls,lines=[];let cur=[],cw_=0;
@@ -504,10 +507,10 @@ function build(){
  const items=[];let prev=null,lastDlg=false;
  // 제목
  if(S.title.trim()){
-  const tf=fontOf(1,TITLE_SIZE),tg=[...S.title.trim().replace(/\s*\n\s*/g,' ')].map(ch=>({ch,b:1,sz:TITLE_SIZE,font:tf,title:1}));kernAll(tg);
-  const tl=wrap(tg,cwid,0),tlh=TITLE_SIZE*1.45;
-  tl.forEach((l,i)=>items.push({k:'line',l,x:0,w:cwid,h:tlh,gap:0,align:'left',sz:TITLE_SIZE}));
-  items.push({k:'space',h:0,gap:TITLE_GAP-PARA});
+  const TS=size*TITLE_SCALE,tf=fontOf(TITLE_W,TS),tg=[...S.title.trim().replace(/\s*\n\s*/g,' ')].map(ch=>({ch,b:1,sz:TS,font:tf,title:1}));kernAll(tg);
+  const tl=wrap(tg,cwid,0),tlh=TS*1.4;
+  tl.forEach((l,i)=>items.push({k:'line',l,x:0,w:cwid,h:tlh,gap:0,align:'left',sz:TS}));
+  items.push({k:'space',h:0,gap:size*TITLE_GAP_SCALE-PARA});
   prev='title';
  }
  blocks.forEach((b,bi)=>{
@@ -531,9 +534,9 @@ function build(){
   const first=((b.k==='p'&&!b.g.some(c=>c.head))||isQ)?S.indent:0;
   const al=(isD||isL)&&S.align==='center'?'left':S.align;
   const lhh=isS?lh*SUB_SCALE:lh;
-  const head=b.g.some(c=>c.head),wl=wrap(gs,w,first);
+  const hl=b.hl||0,HL=hl?HEAD[hl]:null,head=!!hl,wl=wrap(gs,w,first);
   wl.forEach((l,i)=>{
-   items.push({k:'line',blk:bi,li:i,ln:wl.length,keepNext:head&&i===wl.length-1,l,x,w,h:lhh,gap:i?0:(isQ&&prev==='quote'?PARA:gapB),align:al,indent:i===0?first:0,quote:isQ,qJoin:isQ&&(i>0||prev==='quote'),name:isD&&i===0?b.name:null,mark:isL&&i===0?b.mark:null,sz:isS?size*SUB_SCALE:size});
+   items.push({k:'line',blk:bi,li:i,ln:wl.length,keepNext:head&&i===wl.length-1,l,x,w,h:lhh,gap:i?0:(isQ&&prev==='quote'?PARA:gapB),align:hl===3?'right':al,indent:i===0?first:0,quote:isQ,qJoin:isQ&&(i>0||prev==='quote'),name:isD&&i===0?b.name:null,mark:isL&&i===0?b.mark:null,sz:isS?size*SUB_SCALE:HL?size*HL.s:size,...(HL?{h:lhh*HL.s}:{})});
   });
   prev=isQ?'quote':b.k;lastDlg=isD||(lastDlg&&isS);
  });
@@ -635,11 +638,13 @@ function draw(ctx,p,total,scale){
   const avail=it.w-(it.indent||0);
   let x=ox+it.x+(it.indent||0),extra=0,spaces=0;
   if(it.align==='center')x+=(avail-l.w)/2;
+  else if(it.align==='right')x+=avail-l.w;
   else if(it.align==='justify'&&!l.last){spaces=l.gs.filter(g=>g.ch===' ').length;extra=avail-l.w}
   const per=extra>0?(spaces?extra/spaces:(l.gs.length>1?extra/(l.gs.length-1):0)):0;
   // 형광펜: 이어지는 구간을 한 번에 칠해서 겹침 얼룩 방지
   const pos=[];let px=x;
   l.gs.forEach((g,i)=>{pos.push(px);px+=g.w+ls+(per&&(spaces?g.ch===' ':i<l.gs.length-1)?per:0)});
+  const hdSub=mixHex(S.cSub,S.cText,.55);
   const solid=S.hiMode!=='soft';ctx.fillStyle=solid?S.hi:hiSoft(S.hi);
   /* 불투명 형광펜 글자: 밝은 배경이면 대사색, 어두운 배경이면 배경색(반전 느낌) */
   const hiTextCol=isDark(S.bg)?S.bg:S.cAccent;
@@ -647,7 +652,7 @@ function draw(ctx,p,total,scale){
    const a=pos[i]-2,b=pos[j]+l.gs[j].w+2,sz=it.sz;ctx.fillRect(a,base-sz*.9,b-a,sz*1.18);i=j}
   l.gs.forEach((g,i)=>{
    if(g.ch===' ')return;
-   const col=g.pt?S.cPoint:g.title||g.head?S.cAccent:g.sub||g.a?S.cSub:g.q?S.cAccent:S.cText;
+   const col=g.pt?S.cPoint:g.head===3?hdSub:g.title||g.head?S.cAccent:g.sub||g.a?S.cSub:g.q?S.cAccent:S.cText;
    ctx.font=g.font;ctx.fillStyle=solid&&g.h?hiTextCol:col;
    /* 기울임: 한글 폰트엔 이탤릭이 없어서 글자를 살짝 기울여 그림 */
    if(g.it){ctx.save();ctx.translate(pos[i],base);ctx.transform(1,0,-.2,1,0,0);ctx.fillText(g.ch,0,0);ctx.restore()}else ctx.fillText(g.ch,pos[i],base);
