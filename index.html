@@ -365,8 +365,8 @@ const THEMES={light:{bg:'#ffffff',cText:'#777777',cAccent:'#000000',cSub:'#aaaaa
 const hiSoft=h=>{const n=parseInt(h.slice(1),16),f=v=>Math.max(0,2*v-255);return`rgba(${f(n>>16&255)},${f(n>>8&255)},${f(n&255)},.5)`};
 /* 출처 글자 크기: 본문 크기의 75% (0.5px 단위) */
 const footSize=()=>Math.round(S.size*.75*2)/2;
-/* 대사 이름은 본문보다 0.5px 작게 */
-const NAME_DELTA=.5,nameSize=()=>S.size-NAME_DELTA;
+/* 대사 이름은 본문보다 1px 작게 */
+const NAME_DELTA=1,nameSize=()=>S.size-NAME_DELTA;
 const BLANK_RATIO=.35;
 const isDark=h=>{const n=parseInt(String(h).slice(1),16);return((n>>16&255)*.299+(n>>8&255)*.587+(n&255)*.114)<128};
 const FOOT_GAP=32,PARA=3, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
