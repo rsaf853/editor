@@ -213,6 +213,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    <div class="ed">
    <div class="tb" id="tb">
     <button data-w="**" title="굵게 (Ctrl+B)"><b>B</b></button>
+    <button data-w="//" title="기울임 (Ctrl+I)"><i style="font-family:Georgia,serif;font-weight:700">I</i></button>
     <button data-w="__" title="밑줄 (Ctrl+U)"><u>U</u></button>
     <button data-w="~~" title="취소선"><s>S</s></button>
     <i class="dv"></i>
@@ -229,7 +230,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    </div>
    <p class="hint">
     <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬(따옴표는 지우고 대사색 유지) · <code>&lt;sub&gt;</code> 자동 변환<br>
-    <code>*별표*</code> 보조색(별표 숨김) · <code>"대사"</code> 대사색 · <code>==형광펜==</code> · <code>!!강조!!</code><br>
+    <code>*별표*</code> 보조색(별표 숨김) · <code>"대사"</code> 대사색 · <code>==형광펜==</code> · <code>!!강조!!</code> · <code>//기울임//</code><br>
     <code>&gt; 인용</code> · <code>## 소제목</code> · <code>- 목록</code> · <code>---</code> 구분선 · <code>===</code> 페이지 나눔
    </p>
   </div>
@@ -394,21 +395,21 @@ let bgImg=null,imImg=null,page=0,pages=[],layout=null;
 
 /* ========== 파싱 ========== */
 /* 인라인 표기 → 글자 단위 스타일 */
-const MK=/!!|\*\*|~~|__|==|<sub>|<\/sub>|\*|"|“|”/gi;
+const MK=/!!|\*\*|~~|__|==|(?<!:)\/\/|<sub>|<\/sub>|\*|"|“|”/gi;
 function inline(src){
  const parts=[];let last=0,m;MK.lastIndex=0;
  while((m=MK.exec(src))){if(m.index>last)parts.push({t:src.slice(last,m.index)});parts.push({m:m[0].toLowerCase(),t:m[0]});last=MK.lastIndex}
  if(last<src.length)parts.push({t:src.slice(last)});
  // 짝이 없는 기호는 글자 그대로
- const tog=['!!','**','~~','__','==','*','"'];
+ const tog=['!!','**','~~','__','==','//','*','"'];
  tog.forEach(k=>{const idx=parts.map((p,i)=>p.m===k?i:-1).filter(i=>i>=0);if(idx.length%2)delete parts[idx[idx.length-1]].m});
  [['“','”'],['<sub>','</sub>']].forEach(([o,c])=>{const st=[];parts.forEach((p,i)=>{if(p.m===o)st.push(i);else if(p.m===c){if(st.length){p.pair=true;parts[st.pop()].pair=true}else delete p.m}});st.forEach(i=>delete parts[i].m)});
- const f={b:0,s:0,u:0,h:0,a:0,q:0,sub:0,pt:0},out=[];
- const push=(t,o)=>{for(const ch of t)out.push({ch,b:f.b,s:f.s,u:f.u,h:f.h,a:f.a,q:f.q,sub:f.sub,pt:f.pt,...o})};
+ const f={b:0,s:0,u:0,h:0,a:0,q:0,sub:0,pt:0,it:0},out=[];
+ const push=(t,o)=>{for(const ch of t)out.push({ch,b:f.b,s:f.s,u:f.u,h:f.h,a:f.a,q:f.q,sub:f.sub,pt:f.pt,it:f.it,...o})};
  for(const p of parts){
   if(!p.m){push(p.t);continue}
   switch(p.m){
-   case '!!':f.pt^=1;break;case '**':f.b^=1;break;case '~~':f.s^=1;break;case '__':f.u^=1;break;case '==':f.h^=1;break;
+   case '!!':f.pt^=1;break;case '//':f.it^=1;break;case '**':f.b^=1;break;case '~~':f.s^=1;break;case '__':f.u^=1;break;case '==':f.h^=1;break;
    case '*':f.a^=1;break; /* 별표 기호는 표시 안 함 */
    case '<sub>':f.sub=1;break;case '</sub>':f.sub=0;break;
    case '"':if(!f.q){f.q=1;push(p.t,{qm:1})}else{push(p.t,{qm:1});f.q=0}break;
@@ -630,7 +631,9 @@ function draw(ctx,p,total,scale){
   l.gs.forEach((g,i)=>{
    if(g.ch===' ')return;
    const col=g.pt?S.cPoint:g.title||g.head?S.cAccent:g.sub||g.a?S.cSub:g.q?S.cAccent:S.cText;
-   ctx.font=g.font;ctx.fillStyle=solid&&g.h?hiTextCol:col;ctx.fillText(g.ch,pos[i],base);
+   ctx.font=g.font;ctx.fillStyle=solid&&g.h?hiTextCol:col;
+   /* 기울임: 한글 폰트엔 이탤릭이 없어서 글자를 살짝 기울여 그림 */
+   if(g.it){ctx.save();ctx.translate(pos[i],base);ctx.transform(1,0,-.2,1,0,0);ctx.fillText(g.ch,0,0);ctx.restore()}else ctx.fillText(g.ch,pos[i],base);
    const ww=g.w+(i<l.gs.length-1?ls+(per&&!spaces?per:0):0);
    if(g.u)ctx.fillRect(pos[i],base+g.sz*.14,ww,Math.max(1,g.sz/18));
    if(g.s)ctx.fillRect(pos[i],base-g.sz*.32,ww,Math.max(1,g.sz/18));
@@ -810,7 +813,7 @@ $('#tb').addEventListener('mousedown',e=>{if(e.target.closest('button'))e.preven
 $('#tb').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.w)wrapSel(b.dataset.w);else if(b.dataset.l)prefixLines(b.dataset.l);else if('sub' in b.dataset)subLines();else if(b.dataset.ins)insertLine(b.dataset.ins)});
 ta.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey))return;const k=e.key.toLowerCase();
- if(k==='b'){e.preventDefault();wrapSel('**')}else if(k==='u'){e.preventDefault();wrapSel('__')}else if(k==='h'||(e.shiftKey&&k==='y')){e.preventDefault();wrapSel('==')}else if(k==='k'){e.preventDefault();wrapSel('!!')}});
+ if(k==='b'){e.preventDefault();wrapSel('**')}else if(k==='i'){e.preventDefault();wrapSel('//')}else if(k==='u'){e.preventDefault();wrapSel('__')}else if(k==='h'||(e.shiftKey&&k==='y')){e.preventDefault();wrapSel('==')}else if(k==='k'){e.preventDefault();wrapSel('!!')}});
 /* 붙여넣기: 서식 없는 글자만 + 특수 공백 정리 */
 ta.addEventListener('paste',e=>{const t=e.clipboardData&&e.clipboardData.getData('text/plain');if(t==null)return;e.preventDefault();
  const clean=t.replace(/\r\n?/g,'\n').replace(/[   ]/g,' ').replace(/[​﻿]/g,'');
