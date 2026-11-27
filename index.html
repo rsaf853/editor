@@ -221,7 +221,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
    <div class="rh" id="rh" title="드래그해서 높이 조절"><i></i></div>
    </div>
    <p class="hint">
-    <code>이름｜대사</code> <code>이름: "대사"</code> 자동 정렬(따옴표 자동 제거) · <code>&lt;sub&gt;</code> 자동 변환<br>
+    <code>이름｜대사</code> <code>이름: 대사</code> 자동 정렬(따옴표 없어도 대사색) · <code>&lt;sub&gt;</code> 자동 변환<br>
     <code>*별표*</code> 보조색(별표 숨김) · <code>"대사"</code> 대사색 · <code>==형광펜==</code> · <code>!!강조!!</code><br>
     <code>&gt; 인용</code> · <code>## 소제목</code> · <code>- 목록</code> · <code>---</code> 구분선 · <code>===</code> 페이지 나눔
    </p>
@@ -409,7 +409,7 @@ function inline(src){
  }
  return out;
 }
-const DLG=[/^([^{}|｜\n]{1,30}?)\s*[|｜]\s*(.*)$/,/^([^\s:{}|｜"“][^:{}|｜"“\n]{0,14}?)\s*[:：]\s*(["“].*)$/];
+const DLG=[/^([^{}|｜\n]{1,30}?)\s*[|｜]\s*(.*)$/,/^([^\s:{}|｜"“][^:{}|｜"“\n]{0,14}?)\s*[:：](?![\/\d])\s*(\S.*)$/];
 function parse(text){
  const out=[];
  for(let raw of text.replace(/\r\n?/g,'\n').replace(/ /g,' ').split('\n')){
@@ -421,7 +421,7 @@ function parse(text){
   if((m=t.match(/^>\s?(.*)$/))){out.push({k:'quote',g:inline(m[1])});continue}
   if((m=t.match(/^#{1,6}\s+(.*)$/))){out.push({k:'p',g:inline(m[1]).map(c=>({...c,head:1}))});continue}
   if((m=t.match(/^([-*•·–])\s+(.+)$/))){out.push({k:'li',mark:m[1]==='*'?'•':m[1],g:inline(m[2])});continue}
-  let d=null;for(const re of DLG){if((m=t.match(re))&&m[1].trim()){d={name:m[1].trim(),body:m[2]};break}}
+  let d=null;for(const re of DLG){if((m=t.match(re))&&m[1].trim()&&!/^[\d\s.]+$/.test(m[1])){d={name:m[1].trim(),body:m[2]};break}}
   if(d){out.push({k:'dlg',name:d.name,g:inline(d.body).map(c=>({...c,inDlg:1}))});continue}
   out.push({k:'p',g:inline(raw.replace(/^\s+/,''))});
  }
@@ -442,7 +442,7 @@ function kernAll(gs){for(let i=0;i<gs.length;i++){const g=gs[i],n=gs[i+1];g.w=cw
 function advs(str,font){const cs=[...str];return cs.map((ch,i)=>cw(ch,font)+kern(ch,cs[i+1],font)+S.ls)}
 function glyphs(g,size,forceBold){
  /* 대사 본문의 따옴표 기호는 자동으로 뺌 */
- return kernAll(g.filter(c=>!(c.qm&&c.inDlg)).map(c=>{const sz=c.sub?size*SUB_SCALE:size,font=fontOf(c.b||c.head||forceBold||(S.qBold&&c.q),sz);return{...c,sz,font}}));
+ return kernAll(g.filter(c=>!(c.qm&&c.inDlg)).map(c=>{const sz=c.sub?size*SUB_SCALE:size,font=fontOf(c.b||c.head||forceBold||(S.qBold&&(c.q||c.inDlg)),sz);return{...c,sz,font}}));
 }
 function wrap(gs,avail,first){
  const ls=S.ls,lines=[];let cur=[],cw_=0;
@@ -620,7 +620,7 @@ function draw(ctx,p,total,scale){
    const a=pos[i]-2,b=pos[j]+l.gs[j].w+2,sz=it.sz;ctx.fillRect(a,base-sz*.9,b-a,sz*1.18);i=j}
   l.gs.forEach((g,i)=>{
    if(g.ch===' ')return;
-   const col=g.pt?S.cPoint:g.title||g.head?S.cAccent:g.sub||g.a?S.cSub:(g.q&&!g.inDlg)?S.cAccent:S.cText;
+   const col=g.pt?S.cPoint:g.title||g.head?S.cAccent:g.sub||g.a?S.cSub:(g.q||g.inDlg)?S.cAccent:S.cText;
    ctx.font=g.font;ctx.fillStyle=solid&&g.h?hiTextCol:col;ctx.fillText(g.ch,pos[i],base);
    const ww=g.w+(i<l.gs.length-1?ls+(per&&!spaces?per:0):0);
    if(g.u)ctx.fillRect(pos[i],base+g.sz*.14,ww,Math.max(1,g.sz/18));
