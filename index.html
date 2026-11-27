@@ -148,6 +148,9 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
 .dlg .di{padding:0 14px 16px;margin-top:-6px}.dlg .di input{width:100%}
 /* 꾹 눌러 저장 창 */
 .dlg .bx.iv{width:min(440px,100%)}
+.dlg .tt .ivp{display:flex;align-items:center;gap:2px;font-variant-numeric:tabular-nums}
+.dlg .tt .ivp button{border:0;background:none;color:inherit;font:600 13px/1 var(--sans);padding:0 8px;letter-spacing:0}
+.dlg .tt .ivp button:disabled{opacity:.3}
 .ivs{max-height:min(68vh,760px);overflow:auto;padding:0 14px 14px;display:grid;gap:10px;-webkit-overflow-scrolling:touch}
 .dlg .ms.ivh{padding:12px 14px 10px;font-size:11px;color:var(--mut)}
 .ivs img{display:block;width:100%;height:auto;border:1px solid var(--line);box-sizing:border-box;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
@@ -331,7 +334,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--fg);
  </aside>
 </div>
 <div class="toast" id="toast"></div>
-<div class="dlg" id="imv" role="dialog" aria-modal="true" aria-label="이미지 저장"><div class="bx iv"><div class="tt"><span>SAVE</span><span id="ivN"></span></div><p class="ms ivh">사진을 길게 꾹 누르면 저장할 수 있어요.</p><div class="ivs" id="ivs"></div><div class="bt"><button id="ivClose">CLOSE</button></div></div></div>
+<div class="dlg" id="imv" role="dialog" aria-modal="true" aria-label="이미지 저장"><div class="bx iv"><div class="tt"><span>SAVE</span><span class="ivp" id="ivP"><button id="ivPrev" aria-label="이전 페이지">←</button><span id="ivN">01 / 01</span><button id="ivNext" aria-label="다음 페이지">→</button></span></div><p class="ms ivh">사진을 길게 꾹 누르면 저장할 수 있어요.</p><div class="ivs" id="ivs"></div><div class="bt"><button id="ivClose">CLOSE</button></div></div></div>
 <div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT"><div class="bx"><div class="tt"><span id="dlgT">RESET</span></div><p class="ms" id="dlgM"></p><div class="di" id="dlgIW" hidden><input type="text" id="dlgI" maxlength="20" placeholder="프리셋 이름" autocomplete="off"></div><div class="bt"><button id="dlgN">CANCEL</button><button id="dlgY">OK</button></div></div></div>
 
 <script>
@@ -815,17 +818,27 @@ function dl(blob,name){const a=document.createElement('a');a.href=URL.createObje
 /* 모바일: 내려받기가 잘 안 되므로 이미지를 띄워 꾹 눌러 저장 */
 const IS_MOBILE=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const pageURL=i=>{const p=pages[i],c=document.createElement('canvas'),sc=Math.min(EXPORT_SCALE,8000/p.H);c.width=Math.round(W*sc);c.height=Math.round(p.H*sc);draw(c.getContext('2d'),p,pages.length,sc);return c.toDataURL('image/png')};
-function showImgs(list){const box=$('#ivs');box.innerHTML='';list.forEach(i=>{const im=new Image();im.alt=`${i+1}페이지`;im.src=pageURL(i);box.appendChild(im)});
- $('#ivN').textContent=list.length>1?`${list.length} PAGES`:'';$('#imv').classList.add('on');box.scrollTop=0}
+/* 꾹 눌러 저장 창: 한 장씩 보여주고 안에서 앞뒤 페이지로 이동 (옆으로 밀어도 넘어감) */
+let ivIdx=0;const ivCache={};
+function ivShow(){const box=$('#ivs'),n=pages.length;ivIdx=Math.max(0,Math.min(n-1,ivIdx));
+ const im=new Image();im.alt=`${ivIdx+1}페이지`;im.src=ivCache[ivIdx]||(ivCache[ivIdx]=pageURL(ivIdx));box.innerHTML='';box.appendChild(im);box.scrollTop=0;
+ const pad=v=>String(v).padStart(2,'0');$('#ivN').textContent=`${pad(ivIdx+1)} / ${pad(n)}`;
+ $('#ivPrev').disabled=ivIdx===0;$('#ivNext').disabled=ivIdx>=n-1;$('#ivP').style.visibility=n>1?'':'hidden'}
+function showImgs(start){for(const k in ivCache)delete ivCache[k];ivIdx=start||0;ivShow();$('#imv').classList.add('on')}
+$('#ivPrev').addEventListener('click',()=>{ivIdx--;ivShow()});$('#ivNext').addEventListener('click',()=>{ivIdx++;ivShow()});
+{let sx=null,sy=0;const box=$('#ivs');
+ box.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY},{passive:true});
+ box.addEventListener('touchend',e=>{if(sx==null)return;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;sx=null;
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){ivIdx+=dx<0?1:-1;ivShow()}},{passive:true})}
 const ivClose=()=>{$('#imv').classList.remove('on');setTimeout(()=>{$('#ivs').innerHTML=''},250)};
 $('#ivClose').addEventListener('click',ivClose);$('#imv').addEventListener('click',e=>{if(e.target.id==='imv')ivClose()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#imv').classList.contains('on'))ivClose()});
+document.addEventListener('keydown',e=>{if(!$('#imv').classList.contains('on'))return;if(e.key==='Escape')ivClose();else if(e.key==='ArrowRight'){ivIdx++;ivShow()}else if(e.key==='ArrowLeft'){ivIdx--;ivShow()}});
 $('#copy').addEventListener('click',async()=>{
  try{if(!window.ClipboardItem)throw 0;await navigator.clipboard.write([new ClipboardItem({'image/png':pageBlob(page)})]);toast('COPIED')}
- catch(e){showImgs([page])}
+ catch(e){showImgs(page)}
 });
-$('#save').addEventListener('click',async()=>{if(IS_MOBILE){showImgs([page]);return}dl(await pageBlob(page),fname(page));toast('SAVED')});
-$('#saveAll').addEventListener('click',async()=>{if(IS_MOBILE){showImgs(pages.map((_,i)=>i));return}for(let i=0;i<pages.length;i++){dl(await pageBlob(i),fname(i));await new Promise(r=>setTimeout(r,350))}toast(`SAVED ${pages.length} PAGES`)});
+$('#save').addEventListener('click',async()=>{if(IS_MOBILE){showImgs(page);return}dl(await pageBlob(page),fname(page));toast('SAVED')});
+$('#saveAll').addEventListener('click',async()=>{if(IS_MOBILE){showImgs(0);return}for(let i=0;i<pages.length;i++){dl(await pageBlob(i),fname(i));await new Promise(r=>setTimeout(r,350))}toast(`SAVED ${pages.length} PAGES`)});
 $('#prev').addEventListener('click',()=>{if(page>0){page--;render()}});
 $('#next').addEventListener('click',()=>{if(page<pages.length-1){page++;render()}});
 let tT=0;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),1800)}
