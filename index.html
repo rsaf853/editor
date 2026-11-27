@@ -793,6 +793,15 @@ function wrapSel(m){
  let a=ta.selectionStart,b=ta.selectionEnd;const v=ta.value,sel=v.slice(a,b);
  if(sel.startsWith(m)&&sel.endsWith(m)&&sel.length>=2*m.length){replaceSel(a,b,sel.slice(m.length,-m.length));ta.setSelectionRange(a,b-2*m.length);return}
  if(v.slice(a-m.length,a)===m&&v.slice(b,b+m.length)===m){replaceSel(a-m.length,b+m.length,sel);ta.setSelectionRange(a-m.length,b-m.length);return}
+ // 이미 그 서식 안에 있으면(일부만 골라도, 커서만 있어도) 감싼 기호 한 쌍을 지움
+ {const ls=v.lastIndexOf('\n',a-1)+1;let le=v.indexOf('\n',b);if(le<0)le=v.length;
+  if(b<=le){const line=v.slice(ls,le),pos=[];let i=line.indexOf(m);
+   while(i>=0){if(!(m==='//'&&line[i-1]===':')&&!(m==='*'&&(line[i+1]==='*'||line[i-1]==='*'))&&!(m==='='&&false))pos.push(i);i=line.indexOf(m,i+m.length)}
+   for(let k=0;k+1<pos.length;k+=2){const o=ls+pos[k],c=ls+pos[k+1];
+    if(o<=a&&b<=c+m.length&&!(a===o&&b===o)){
+     ta.focus();ta.setSelectionRange(c,c+m.length);if(!document.execCommand('insertText',false,''))ta.setRangeText('',c,c+m.length,'end');
+     ta.setSelectionRange(o,o+m.length);if(!document.execCommand('insertText',false,''))ta.setRangeText('',o,o+m.length,'end');
+     set('text',ta.value);const na=Math.max(o,a-m.length),nb=Math.max(na,Math.min(c-m.length,b-m.length));ta.setSelectionRange(na,nb);return}}}}
  // 줄바꿈이 섞여 있으면 줄마다 따로 감쌈
  const out=sel.split('\n').map(s=>s.trim()?m+s+m:s).join('\n');
  replaceSel(a,b,out);if(!sel)ta.setSelectionRange(a+m.length,a+m.length);else ta.setSelectionRange(a,a+out.length);
