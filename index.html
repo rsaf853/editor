@@ -430,7 +430,7 @@ function parse(text){
   if((m=t.match(/^>\s?(.*)$/))){out.push({k:'quote',g:inline(m[1])});continue}
   if((m=t.match(/^#{1,6}\s+(.*)$/))){out.push({k:'p',g:inline(m[1]).map(c=>({...c,head:1}))});continue}
   if((m=t.match(/^([-*•·–])\s+(.+)$/))){out.push({k:'li',mark:m[1]==='*'?'•':m[1],g:inline(m[2])});continue}
-  let d=null;for(const re of DLG){if((m=t.match(re))&&m[1].trim()&&!/^[\d\s.]+$/.test(m[1])){d={name:m[1].trim(),body:m[2]};break}}
+  let d=null;for(const re of DLG){if((m=t.match(re))&&m[1].trim()){d={name:m[1].trim(),body:m[2]};break}}
   if(d){out.push({k:'dlg',name:d.name,g:inline(d.body).map(c=>({...c,inDlg:1}))});continue}
   out.push({k:'p',g:inline(raw.replace(/^\s+/,''))});
  }
