@@ -25,8 +25,8 @@
 @font-face{font-family:'Xanh Mono';font-weight:400;font-display:swap;src:url('fonts/XanhMono-Regular.woff2') format('woff2')}
 @font-face{font-family:'Yeolrin Myeongjo';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/hyunbinseo/yeolrin@1/YeolrinMyeongjo-Medium.woff2') format('woff2')}
 @font-face{font-family:'Yeolrin Myeongjo';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/hyunbinseo/yeolrin@1/YeolrinMyeongjo-Bold.woff2') format('woff2')}
-@font-face{font-family:'BookkGothic';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Lt.woff2') format('woff2')}
-@font-face{font-family:'BookkGothic';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Bd.woff2') format('woff2')}
+@font-face{font-family:'BookkGothic';font-weight:400;font-display:swap;src:url('fonts/BookkGothic-Lt.woff2') format('woff2')}
+@font-face{font-family:'BookkGothic';font-weight:700;font-display:swap;src:url('fonts/BookkGothic-Bd.woff2') format('woff2')}
 @font-face{font-family:'Paperlogy';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2') format('woff2')}
 @font-face{font-family:'Paperlogy';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2') format('woff2')}
 
@@ -374,7 +374,7 @@ const footSize=()=>Math.round(S.size*.75*2)/2;
 const NAME_DELTA=1,nameSize=()=>S.size-NAME_DELTA;
 const BLANK_RATIO=.35;
 const isDark=h=>{const n=parseInt(String(h).slice(1),16);return((n>>16&255)*.299+(n>>8&255)*.587+(n&255)*.114)<128};
-const FOOT_GAP=32,PARA=3, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=20, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
+const FOOT_GAP=32,PARA=3, TITLE_SIZE=24, TITLE_GAP=24, NAME_GAP=35, IMG_GAP=30,  SUB_SCALE=.8, HI_ALPHA=.5, QUOTE_PAD=16;
 
 const DEF={title:'',text:'',font:'pretendard',align:'left',size:20,lh:160,ls:-0.5,indent:0,
  ...THEMES.light,hi:'#FFE0F9',hiMode:'solid',qBold:false,cPoint:'#3A6FE0',
