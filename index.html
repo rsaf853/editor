@@ -528,7 +528,7 @@ function build(){
   const liW=isL?Math.ceil(cw(b.mark,fontOf(0,size))+size*.5):0;
   const x=isD?nameCol:isQ?QUOTE_PAD:isL?liW:0,w=cwid-x;
   const gs=glyphs(b.g,size);
-  const first=(b.k==='p'||isQ)?S.indent:0;
+  const first=((b.k==='p'&&!b.g.some(c=>c.head))||isQ)?S.indent:0;
   const al=(isD||isL)&&S.align==='center'?'left':S.align;
   const lhh=isS?lh*SUB_SCALE:lh;
   const head=b.g.some(c=>c.head),wl=wrap(gs,w,first);
