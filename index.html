@@ -25,8 +25,6 @@
 @font-face{font-family:'Xanh Mono';font-weight:400;font-display:swap;src:url('fonts/XanhMono-Regular.woff2') format('woff2')}
 @font-face{font-family:'Yeolrin Myeongjo';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/hyunbinseo/yeolrin@1/YeolrinMyeongjo-Medium.woff2') format('woff2')}
 @font-face{font-family:'Yeolrin Myeongjo';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/hyunbinseo/yeolrin@1/YeolrinMyeongjo-Bold.woff2') format('woff2')}
-@font-face{font-family:'BookkGothic';font-weight:400;font-display:swap;src:url('fonts/BookkGothic-Lt.woff2') format('woff2')}
-@font-face{font-family:'BookkGothic';font-weight:700;font-display:swap;src:url('fonts/BookkGothic-Bd.woff2') format('woff2')}
 @font-face{font-family:'Paperlogy';font-weight:400;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2') format('woff2')}
 @font-face{font-family:'Paperlogy';font-weight:700;font-display:swap;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2') format('woff2')}
 
@@ -352,7 +350,6 @@ let W=800;
 const SANS_FB="'Pretendard JP Variable','Noto Sans KR',sans-serif",SERIF_FB="'Noto Serif KR',serif";
 const FONTS={
  pretendard:{n:'프리텐다드',css:"'Pretendard JP Variable',"+SANS_FB},
- bookkgothic:{n:'부크크 고딕',css:"'BookkGothic',"+SANS_FB},
  dandigothic:{n:'부산단디 고딕',css:"'BusanDandiGothic',"+SANS_FB},
  dandimyeongjo:{n:'부산단디 명조',css:"'BusanDandiMyeongjo',"+SERIF_FB},
  yeolrin:{n:'열린명조',css:"'Yeolrin Myeongjo',"+SERIF_FB},
@@ -387,7 +384,7 @@ try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S={...DEF,...v}}c
 delete S.width;
 if(S.fNum===false)S.fNumFmt='off';delete S.fNum;if(S.fNumFmt==='pad')S.fNumFmt='n';if(!['off','of','n'].includes(S.fNumFmt))S.fNumFmt='of';
 if(String(S.cPoint).toLowerCase()==='#e0608a')S.cPoint='#3A6FE0';
-if(S.font==='nexon')S.font='bookkgothic';
+if(S.font==='nexon'||S.font==='bookkgothic')S.font='pretendard';
 if(!(S.font in FONTS))S.font='pretendard';
 if(['#111111','#080808'].includes(String(S.bg).toLowerCase()))S.bg='#070707';
 if(S.hiMode!=='soft')S.hiMode='solid';
