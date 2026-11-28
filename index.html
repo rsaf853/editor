@@ -713,7 +713,7 @@ function secretWrap(fn){
  const keep=S,kv=[HEAD,TITLE_SCALE,TITLE_W,TITLE_GAP_SCALE,QUOTE_PAD],dk=isDark(S.bg);
  SECRET_BOARD=[THEMES.light.bg,THEMES.dark.bg].includes(String(S.bg).toLowerCase())&&!bgImg;
  S={...S,hiMode:'solid',fNumFmt:'of',fPlace:'bottom',
-  ...(SECRET_BOARD?{bg:dk?'#000000':'#ffffff',cText:dk?'#bfbfbf':'#666666',cAccent:dk?'#ffffff':'#000000',cSub:dk?'#777777':'#999999',cPoint:dk?'#2e51ff':'#1f4bff'}:{})};
+  ...(SECRET_BOARD?{bg:dk?'#000000':'#ffffff',cText:dk?'#999999':'#666666',cAccent:dk?'#ffffff':'#000000',cSub:dk?'#777777':'#999999',cPoint:dk?'#2e51ff':'#1f4bff'}:{})};
  HEAD={1:{s:1.1,w:800},2:{s:.94,w:600},3:{s:.85,w:500}};TITLE_SCALE=.94;TITLE_W=300;TITLE_GAP_SCALE=.7;QUOTE_PAD=30;SECRET=true;
  try{return fn()}finally{S=keep;[HEAD,TITLE_SCALE,TITLE_W,TITLE_GAP_SCALE,QUOTE_PAD]=kv;SECRET=false}
 }
