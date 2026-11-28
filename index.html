@@ -624,7 +624,7 @@ function draw0(ctx,p,total,scale){
   /* 마스크는 배경색으로 덮음: 라이트=흰색, 다크=어두운색 */
   if(S.bgTone>0){ctx.fillStyle=hexA(S.bg,S.bgTone/100);ctx.fillRect(0,0,W,H)}
  }
- if(SECRET)drawBoard(ctx,p,total);
+ if(SECRET&&SECRET_BOARD)drawBoard(ctx,p,total);
  const r=imRect(p);
  if(r){cover(ctx,imImg,r,S.imZoom,S.imOX,S.imOY);if(S.imLine){ctx.strokeStyle=S.cSub;ctx.lineWidth=1;ctx.strokeRect(r.x+.5,r.y+.5,r.w-1,r.h-1)}}
 
@@ -704,14 +704,15 @@ function draw0(ctx,p,total,scale){
 let SECRET=false;
 /* 숨은 디자인의 쪽번호를 바닥에서 조금 더 띄움 */
 const SECRET_FOOT_LIFT=8;
-/* 배경색을 직접 고르거나 배경 이미지를 넣으면 숨은 디자인은 꺼짐 (기본 라이트·다크 배경일 때만) */
-const isSecret=()=>S.fName.trim()==='K. Anderson'&&S.fSrc.trim()==='R. Spencer'&&[THEMES.light.bg,THEMES.dark.bg].includes(String(S.bg).toLowerCase())&&!bgImg;
+const isSecret=()=>S.fName.trim()==='K. Anderson'&&S.fSrc.trim()==='R. Spencer';
+/* 배경색을 직접 고르거나 배경 이미지를 넣으면 체스판 배경만 빠지고 고른 배경·글자색을 그대로 씀 */
+let SECRET_BOARD=false;
 function secretWrap(fn){
  if(!isSecret())return fn();
  const keep=S,kv=[HEAD,TITLE_SCALE,TITLE_W,TITLE_GAP_SCALE,QUOTE_PAD],dk=isDark(S.bg);
- S={...S,font:'pretendard',size:20,lh:160,ls:-1,indent:30,margin:75,
-  bg:dk?'#000000':'#ffffff',cText:dk?'#9a9a9a':'#777777',cAccent:dk?'#ffffff':'#000000',cSub:dk?'#5f5f5f':'#aaaaaa',
-  hiMode:'solid',fNumFmt:'of',fPlace:'bottom'};
+ SECRET_BOARD=[THEMES.light.bg,THEMES.dark.bg].includes(String(S.bg).toLowerCase())&&!bgImg;
+ S={...S,font:'pretendard',size:20,lh:160,ls:-1,indent:30,margin:75,hiMode:'solid',fNumFmt:'of',fPlace:'bottom',
+  ...(SECRET_BOARD?{bg:dk?'#000000':'#ffffff',cText:dk?'#9a9a9a':'#777777',cAccent:dk?'#ffffff':'#000000',cSub:dk?'#5f5f5f':'#aaaaaa'}:{})};
  HEAD={1:{s:1.1,w:800},2:{s:.94,w:600},3:{s:.85,w:500}};TITLE_SCALE=.94;TITLE_W=300;TITLE_GAP_SCALE=.7;QUOTE_PAD=30;SECRET=true;
  try{return fn()}finally{S=keep;[HEAD,TITLE_SCALE,TITLE_W,TITLE_GAP_SCALE,QUOTE_PAD]=kv;SECRET=false}
 }
