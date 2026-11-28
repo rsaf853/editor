@@ -707,7 +707,7 @@ const SECRET_FOOT_LIFT=8;
 const isSecret=()=>S.fName.trim()==='K. Anderson'&&S.fSrc.trim()==='R. Spencer';
 /* 배경색을 직접 고르거나 배경 이미지를 넣으면 체스판 배경만 빠지고 고른 배경·글자색을 그대로 씀 */
 let SECRET_BOARD=false;
-const SECRET_DEF={font:'pretendard',size:20,lh:160,ls:-1,indent:30,margin:75};
+const SECRET_DEF={font:'pretendard',size:20,lh:160,ls:-1,indent:20,margin:75};
 function secretWrap(fn){
  if(!isSecret())return fn();
  const keep=S,kv=[HEAD,TITLE_SCALE,TITLE_W,TITLE_GAP_SCALE,QUOTE_PAD],dk=isDark(S.bg);
