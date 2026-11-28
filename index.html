@@ -704,7 +704,8 @@ function draw0(ctx,p,total,scale){
 let SECRET=false;
 /* 숨은 디자인의 쪽번호를 바닥에서 조금 더 띄움 */
 const SECRET_FOOT_LIFT=8;
-const isSecret=()=>S.fName.trim()==='K. Anderson'&&S.fSrc.trim()==='R. Spencer';
+/* 배경색을 직접 고르거나 배경 이미지를 넣으면 숨은 디자인은 꺼짐 (기본 라이트·다크 배경일 때만) */
+const isSecret=()=>S.fName.trim()==='K. Anderson'&&S.fSrc.trim()==='R. Spencer'&&[THEMES.light.bg,THEMES.dark.bg].includes(String(S.bg).toLowerCase())&&!bgImg;
 function secretWrap(fn){
  if(!isSecret())return fn();
  const keep=S,kv=[HEAD,TITLE_SCALE,TITLE_W,TITLE_GAP_SCALE,QUOTE_PAD],dk=isDark(S.bg);
